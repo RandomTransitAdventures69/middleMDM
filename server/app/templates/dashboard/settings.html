@@ -1,42 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Server Settings - {{ app_name }}{% endblock %}
+{% block title %}SYSTEM - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Server Settings</h1>
+    <h1>SYSTEM CONFIGURATION</h1>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Server Information</div>
+<section class="panel">
+    <header class="panel-header">SERVER INFO</header>
     <div class="panel-body">
         <div class="detail-grid">
             <div class="detail-row">
-                <span class="detail-label">Application:</span>
+                <span class="detail-label">APPLICATION</span>
                 <span class="detail-value">{{ app_name }} {{ app_version }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">API Version:</span>
+                <span class="detail-label">API VERSION</span>
                 <span class="detail-value">v1</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Database:</span>
-                <span class="detail-value">SQLAlchemy (SQLite/PostgreSQL)</span>
+                <span class="detail-label">DATABASE</span>
+                <span class="detail-value">SQLALCHEMY (SQLITE/POSTGRESQL)</span>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="panel">
-    <div class="panel-header">Configuration</div>
+<section class="panel">
+    <header class="panel-header">CONFIGURATION</header>
     <div class="panel-body">
         <p class="info-text">Server configuration is managed via environment variables and config files.</p>
-        <ul>
-            <li>See <code>server/.env.example</code> for configuration options</li>
-            <li>Database: Configured via DATABASE_URL</li>
-            <li>Enrollment: Configured via ENROLLMENT_SECRET</li>
-            <li>Security settings in server/config.py</li>
+        <ul style="margin-left: var(--space-xl); color: var(--text-secondary);">
+            <li style="margin-bottom: var(--space-xs);">See <code>server/.env.example</code> for configuration options</li>
+            <li style="margin-bottom: var(--space-xs);">Database: Configured via DATABASE_URL</li>
+            <li style="margin-bottom: var(--space-xs);">Enrollment: Configured via ENROLLMENT_SECRET</li>
+            <li style="margin-bottom: var(--space-xs);">Security settings in server/config.py</li>
         </ul>
     </div>
-</div>
+</section>
 {% endblock %}

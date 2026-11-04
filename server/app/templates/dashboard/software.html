@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}Software Inventory - {{ app_name }}{% endblock %}
+{% block title %}SOFTWARE - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Software Inventory</h1>
+    <h1>SOFTWARE INVENTORY</h1>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Installed Software</div>
+<section class="panel">
+    <header class="panel-header">INSTALLED APPLICATIONS</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Application Name</th>
-                    <th>Version</th>
-                    <th>Publisher</th>
-                    <th>Device</th>
+                    <th>APPLICATION</th>
+                    <th>VERSION</th>
+                    <th>PUBLISHER</th>
+                    <th>DEVICE</th>
                 </tr>
             </thead>
             <tbody>
                 {% if software %}
                     {% for sw in software %}
                     <tr>
-                        <td>{{ sw.name }}</td>
-                        <td>{{ sw.version or '-' }}</td>
+                        <td style="color: var(--text-primary);">{{ sw.name }}</td>
+                        <td style="font-family: var(--font-mono);">{{ sw.version or '-' }}</td>
                         <td>{{ sw.publisher or '-' }}</td>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=sw.device_id) }}">Device {{ sw.device_id }}</a></td>
+                        <td><a href="{{ url_for('dashboard.device_detail', device_id=sw.device_id) }}">DEVICE #{{ sw.device_id }}</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="4" class="text-center">No software inventory data</td></tr>
+                    <tr><td colspan="4" class="text-center">NO SOFTWARE DATA</td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-</div>
+</section>
 {% endblock %}

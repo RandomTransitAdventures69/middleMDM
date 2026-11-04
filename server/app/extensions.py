@@ -1,7 +1,7 @@
 """Shared extensions for the middleMDM Flask application."""
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
 from flask_cors import CORS
 

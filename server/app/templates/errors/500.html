@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}500 - Internal Server Error - {{ app_name }}{% endblock %}
+{% block title %}500 - {{ app_name }}{% endblock %}
 
 {% block content %}
-<div class="panel">
-    <div class="panel-header">Error 500</div>
+<section class="panel">
+    <header class="panel-header">ERROR 500</header>
     <div class="panel-body">
-        <h2>Internal Server Error</h2>
-        <p>{{ message }}</p>
-        <br>
-        <a href="{{ url_for('dashboard.index') }}" class="btn">Return to Dashboard</a>
+        <h2 style="color: var(--accent-red); margin-bottom: var(--space-lg);">INTERNAL SERVER ERROR</h2>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">{{ message }}</p>
+        <a href="{{ url_for('dashboard.index') }}" class="btn">RETURN TO CONTROL ROOM</a>
     </div>
-</div>
+</section>
+{% endblock %}

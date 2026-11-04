@@ -1,51 +1,66 @@
 {% extends "base.html" %}
 
-{% block title %}Devices - {{ app_name }}{% endblock %}
+{% block title %}DEVICES - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Devices</h1>
+    <h1>DEVICE INVENTORY</h1>
+    <div class="page-actions">
+        <span class="btn" style="cursor: default;">TOTAL: {{ devices|length }}</span>
+    </div>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Device Inventory</div>
+<section class="panel">
+    <header class="panel-header">ENROLLED DEVICES</header>
     <div class="panel-body panel-body-no-padding">
-        <table class="data-table sortable">
+        <table class="data-table">
             <thead>
                 <tr>
-                    <th>Hostname</th>
-                    <th>Device ID</th>
-                    <th>Manufacturer</th>
-                    <th>Model</th>
+                    <th>HOSTNAME</th>
+                    <th>DEVICE ID</th>
+                    <th>MANUFACTURER</th>
+                    <th>MODEL</th>
                     <th>OS</th>
-                    <th>OS Version</th>
-                    <th>Status</th>
-                    <th>Last Check-in</th>
-                    <th>Enrollment Date</th>
-                    <th>Actions</th>
+                    <th>VERSION</th>
+                    <th>STATUS</th>
+                    <th>LAST CHECK-IN</th>
+                    <th>ENROLLED</th>
+                    <th>ACTIONS</th>
                 </tr>
             </thead>
             <tbody>
                 {% if devices %}
                     {% for device in devices %}
                     <tr>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or 'Unnamed' }}</a></td>
-                        <td>{{ device.device_id }}</td>
+                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or 'UNNAMED' }}</a></td>
+                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.device_id }}</td>
                         <td>{{ device.manufacturer or '-' }}</td>
                         <td>{{ device.model or '-' }}</td>
                         <td>{{ device.os_name or '-' }}</td>
                         <td>{{ device.os_version or '-' }}</td>
-                        <td><span class="status-badge status-{{ 'online' if device.is_online else 'offline' }}">{{ 'Online' if device.is_online else 'Offline' }}</span></td>
-                        <td>{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'Never' }}</td>
-                        <td>{{ device.enrollment_date.strftime('%Y-%m-%d') if device.enrollment_date else '-' }}</td>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}" class="btn btn-small">View</a></td>
+                        <td>
+                            {% if device.is_online %}
+                            <span class="status-indicator status-online">
+                                <span class="status-led"></span>
+                                <span class="status-text">ON</span>
+                            </span>
+                            {% else %}
+                            <span class="status-indicator status-offline">
+                                <span class="status-led"></span>
+                                <span class="status-text">OFF</span>
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M') if device.last_checkin else 'NEVER' }}</td>
+                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.enrollment_date.strftime('%Y-%m-%d') if device.enrollment_date else '-' }}</td>
+                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}" class="btn btn-small">INSPECT</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="10" class="text-center">No devices enrolled</td></tr>
+                    <tr><td colspan="10" class="text-center">NO DEVICES ENROLLED</td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-</div>
+</section>
 {% endblock %}

@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}Device Groups - {{ app_name }}{% endblock %}
+{% block title %}GROUPS - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Device Groups</h1>
+    <h1>DEVICE GROUPS</h1>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Groups</div>
+<section class="panel">
+    <header class="panel-header">GROUPS</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Members</th>
-                    <th>Created</th>
+                    <th>NAME</th>
+                    <th>DESCRIPTION</th>
+                    <th>MEMBERS</th>
+                    <th>CREATED</th>
                 </tr>
             </thead>
             <tbody>
                 {% if groups %}
                     {% for group in groups %}
                     <tr>
-                        <td>{{ group.name }}</td>
+                        <td style="color: var(--accent-amber); font-weight: 600;">{{ group.name }}</td>
                         <td>{{ group.description or '-' }}</td>
                         <td>{{ group.memberships|length }}</td>
-                        <td>{{ group.created_at.strftime('%Y-%m-%d') if group.created_at else '-' }}</td>
+                        <td style="font-family: var(--font-mono);">{{ group.created_at.strftime('%Y-%m-%d') if group.created_at else '-' }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="4" class="text-center">No groups created</td></tr>
+                    <tr><td colspan="4" class="text-center">NO GROUPS DEFINED</td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-</div>
+</section>
 {% endblock %}

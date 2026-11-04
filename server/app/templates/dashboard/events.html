@@ -1,43 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Activity Logs - {{ app_name }}{% endblock %}
+{% block title %}EVENT LOG - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Activity Logs</h1>
+    <h1>ACTIVITY LOG</h1>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Event Log</div>
+<section class="panel">
+    <header class="panel-header">SYSTEM EVENTS</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Level</th>
-                    <th>Category</th>
-                    <th>Source</th>
-                    <th>Message</th>
-                    <th>IP Address</th>
+                    <th>TIMESTAMP</th>
+                    <th>LEVEL</th>
+                    <th>CATEGORY</th>
+                    <th>SOURCE</th>
+                    <th>MESSAGE</th>
+                    <th>IP ADDRESS</th>
                 </tr>
             </thead>
             <tbody>
                 {% if events %}
                     {% for event in events %}
                     <tr>
-                        <td>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td style="font-family: var(--font-mono);">{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                         <td><span class="level-badge level-{{ event.level.lower() }}">{{ event.level }}</span></td>
-                        <td>{{ event.category }}</td>
+                        <td style="font-family: var(--font-mono);">{{ event.category|upper }}</td>
                         <td>{{ event.source or '-' }}</td>
                         <td>{{ event.message }}</td>
-                        <td>{{ event.ip_address or '-' }}</td>
+                        <td style="font-family: var(--font-mono);">{{ event.ip_address or '-' }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="6" class="text-center">No events logged</td></tr>
+                    <tr><td colspan="6" class="text-center">NO EVENTS LOGGED</td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-</div>
+</section>
 {% endblock %}

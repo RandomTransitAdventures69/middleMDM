@@ -1,37 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}Login - {{ app_name }}{% endblock %}
+{% block title %}AUTHENTICATION - {{ app_name }}{% endblock %}
 
 {% block auth_content %}
 <div class="login-box">
     <div class="login-header">
         <h1>{{ app_name }}</h1>
-        <p>Mobile Device Management Platform</p>
+        <p>DEVICE MANAGEMENT CONTROL SYSTEM</p>
     </div>
     
     {% if error %}
     <div class="alert alert-error">{{ error }}</div>
     {% endif %}
     
-    <form method="POST" action="{{ url_for('auth.login') }}" class="login-form">
+    <form method="POST" action="{{ url_for('auth.login') }}" class="login-form" autocomplete="off">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <div class="form-group">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" id="username" name="username" class="form-input" required autofocus>
+            <label for="username" class="form-label">OPERATOR ID</label>
+            <input type="text" id="username" name="username" class="form-input" required autofocus autocomplete="username">
         </div>
         
         <div class="form-group">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-input" required>
+            <label for="password" class="form-label">ACCESS CODE</label>
+            <input type="password" id="password" name="password" class="form-input" required autocomplete="current-password">
         </div>
         
         <div class="form-group checkbox-group">
             <label>
-                <input type="checkbox" name="remember_me" value="y"> Remember me
+                <input type="checkbox" name="remember_me" value="y"> REMEMBER SESSION
             </label>
         </div>
         
-        <button type="submit" class="btn btn-primary">Login</button>
+        <button type="submit" class="btn btn-primary">INITIATE ACCESS</button>
     </form>
 </div>
+{% endblock %}

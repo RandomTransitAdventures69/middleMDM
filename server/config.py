@@ -20,8 +20,6 @@ class Config:
     SESSION_COOKIE_SECURE = os.environ.get("SESSION_COOKIE_SECURE", "false").lower() == "true"
 
     # --- Database ---
-    # Default to a local SQLite file for development. Production must set
-    # DATABASE_URL to a PostgreSQL connection string.
     DATABASE_URL = os.environ.get(
         "DATABASE_URL",
         f"sqlite:///{BASE_DIR / 'middlemdm_dev.db'}",
@@ -39,7 +37,6 @@ class Config:
     API_TOKEN_EXPIRY_SECONDS = int(os.environ.get("API_TOKEN_EXPIRY_SECONDS", "86400"))
 
     # --- Device enrollment ---
-    # Per-device enrollment secret. In production this is generated per device.
     ENROLLMENT_SECRET = os.environ.get("ENROLLMENT_SECRET", "dev-enrollment-secret-change-me")
 
     # --- Email / SMTP (optional, for future account recovery) ---
@@ -56,6 +53,10 @@ class Config:
     # --- CORS ---
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
 
+    # CSRF
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_CHECK_DEFAULT = False
+
     @staticmethod
     def init_app(app):
         pass
@@ -64,8 +65,8 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
-    # Keep sessions secure only over HTTPS in production; dev allows http.
     SESSION_COOKIE_SECURE = False
+    WTF_CSRF_ENABLED = False  # Disable CSRF for API in dev if needed, but better to handle
 
 
 class TestingConfig(Config):
@@ -76,6 +77,7 @@ class TestingConfig(Config):
     SESSION_COOKIE_SECURE = False
     SECRET_KEY = "test-secret-key"
     ENROLLMENT_SECRET = "test-enrollment-secret"
+    WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(Config):

@@ -24,8 +24,8 @@ def permission_required(perm):
 
 def log_event(level, category, message, source=None, user_id=None, device_id=None, ip_address=None, details=None):
     """Create an event log entry."""
-    from .models.event import EventLog
-    from .extensions import db
+    from ..models.event import EventLog
+    from ..extensions import db
 
     if isinstance(details, (dict, list)):
         details = json.dumps(details)

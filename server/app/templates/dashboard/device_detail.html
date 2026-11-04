@@ -4,93 +4,134 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Device Details</h1>
+    <h1>DEVICE INSPECTION</h1>
     <div class="page-actions">
-        <a href="{{ url_for('dashboard.devices') }}" class="btn">Back to Devices</a>
+        <a href="{{ url_for('dashboard.devices') }}" class="btn">BACK TO INVENTORY</a>
     </div>
 </div>
 
-<div class="panel">
-    <div class="panel-header">General Information</div>
+<section class="panel">
+    <header class="panel-header">GENERAL</header>
     <div class="panel-body">
         <div class="detail-grid">
             <div class="detail-row">
-                <span class="detail-label">Device ID:</span>
+                <span class="detail-label">DEVICE ID</span>
                 <span class="detail-value">{{ device.device_id }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Hostname:</span>
-                <span class="detail-value">{{ device.hostname or 'N/A' }}</span>
+                <span class="detail-label">HOSTNAME</span>
+                <span class="detail-value">{{ device.hostname or 'UNDEFINED' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Status:</span>
-                <span class="detail-value"><span class="status-badge status-{{ 'online' if device.is_online else 'offline' }}">{{ 'Online' if device.is_online else 'Offline' }}</span></span>
+                <span class="detail-label">STATUS</span>
+                <span class="detail-value">
+                    {% if device.is_online %}
+                    <span class="status-indicator status-online">
+                        <span class="status-led"></span>
+                        <span class="status-text">ONLINE</span>
+                    </span>
+                    {% else %}
+                    <span class="status-indicator status-offline">
+                        <span class="status-led"></span>
+                        <span class="status-text">OFFLINE</span>
+                    </span>
+                    {% endif %}
+                </span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Manufacturer:</span>
-                <span class="detail-value">{{ device.manufacturer or 'N/A' }}</span>
+                <span class="detail-label">ENROLLED</span>
+                <span class="detail-value">{{ device.enrollment_date.strftime('%Y-%m-%d %H:%M:%S') if device.enrollment_date else 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Model:</span>
-                <span class="detail-value">{{ device.model or 'N/A' }}</span>
+                <span class="detail-label">LAST CHECK-IN</span>
+                <span class="detail-value">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'NEVER' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Serial Number:</span>
-                <span class="detail-value">{{ device.serial_number or 'N/A' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Enrollment Date:</span>
-                <span class="detail-value">{{ device.enrollment_date.strftime('%Y-%m-%d %H:%M:%S') if device.enrollment_date else 'N/A' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Last Check-in:</span>
-                <span class="detail-value">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'Never' }}</span>
+                <span class="detail-label">CLIENT VERSION</span>
+                <span class="detail-value">{{ device.client_version or 'UNKNOWN' }}</span>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="panel">
-    <div class="panel-header">Operating System</div>
+<section class="panel">
+    <header class="panel-header">HARDWARE</header>
     <div class="panel-body">
         <div class="detail-grid">
             <div class="detail-row">
-                <span class="detail-label">OS Name:</span>
-                <span class="detail-value">{{ device.os_name or 'N/A' }}</span>
+                <span class="detail-label">MANUFACTURER</span>
+                <span class="detail-value">{{ device.manufacturer or 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">OS Version:</span>
-                <span class="detail-value">{{ device.os_version or 'N/A' }}</span>
+                <span class="detail-label">MODEL</span>
+                <span class="detail-value">{{ device.model or 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">OS Build:</span>
-                <span class="detail-value">{{ device.os_build or 'N/A' }}</span>
+                <span class="detail-label">SERIAL NUMBER</span>
+                <span class="detail-value">{{ device.serial_number or 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Client Version:</span>
-                <span class="detail-value">{{ device.client_version or 'N/A' }}</span>
+                <span class="detail-label">CPU</span>
+                <span class="detail-value">{{ device.cpu or 'UNKNOWN' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">CPU CORES</span>
+                <span class="detail-value">{{ device.cpu_cores or 'UNKNOWN' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">TOTAL RAM</span>
+                <span class="detail-value">{% if device.total_ram_bytes %}{{ (device.total_ram_bytes / (1024**3))|round(2) }} GB{% else %}UNKNOWN{% endif %}</span>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<div class="panel">
-    <div class="panel-header">Hardware</div>
+<section class="panel">
+    <header class="panel-header">OPERATING SYSTEM</header>
     <div class="panel-body">
         <div class="detail-grid">
             <div class="detail-row">
-                <span class="detail-label">CPU:</span>
-                <span class="detail-value">{{ device.cpu or 'N/A' }}</span>
+                <span class="detail-label">OS NAME</span>
+                <span class="detail-value">{{ device.os_name or 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">CPU Cores:</span>
-                <span class="detail-value">{{ device.cpu_cores or 'N/A' }}</span>
+                <span class="detail-label">OS VERSION</span>
+                <span class="detail-value">{{ device.os_version or 'UNKNOWN' }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Total RAM:</span>
-                <span class="detail-value">{{ (device.total_ram_bytes / (1024**3))|round(2) if device.total_ram_bytes else 'N/A' }} GB</span>
+                <span class="detail-label">OS BUILD</span>
+                <span class="detail-value">{{ device.os_build or 'UNKNOWN' }}</span>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<section class="panel">
+    <header class="panel-header">NETWORK</header>
+    <div class="panel-body">
+        {% if device.network_interfaces %}
+            {% for iface in device.network_interfaces %}
+            <div style="margin-bottom: var(--space-lg);">
+                <div style="color: var(--accent-amber); font-weight: 600; margin-bottom: var(--space-sm);">{{ iface.name or 'INTERFACE' }}</div>
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">MAC ADDRESS</span>
+                        <span class="detail-value">{{ iface.mac_address or 'UNKNOWN' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">IP ADDRESSES</span>
+                        <span class="detail-value">{{ iface.get_ip_addresses()|join(', ') or 'NONE' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">ACTIVE</span>
+                        <span class="detail-value">{{ 'YES' if iface.is_active else 'NO' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center" style="color: var(--text-muted);">NO NETWORK DATA</div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

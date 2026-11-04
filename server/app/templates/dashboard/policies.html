@@ -1,41 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Policies - {{ app_name }}{% endblock %}
+{% block title %}POLICIES - {{ app_name }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>Policy Management</h1>
+    <h1>POLICY MANAGEMENT</h1>
 </div>
 
-<div class="panel">
-    <div class="panel-header">Policies</div>
+<section class="panel">
+    <header class="panel-header">POLICIES</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Type</th>
-                    <th>Enabled</th>
-                    <th>Description</th>
+                    <th>NAME</th>
+                    <th>CATEGORY</th>
+                    <th>TYPE</th>
+                    <th>ENABLED</th>
+                    <th>DESCRIPTION</th>
                 </tr>
             </thead>
             <tbody>
                 {% if policies %}
                     {% for policy in policies %}
                     <tr>
-                        <td>{{ policy.name }}</td>
-                        <td>{{ policy.category }}</td>
-                        <td>{{ policy.policy_type }}</td>
-                        <td>{{ 'Yes' if policy.enabled else 'No' }}</td>
+                        <td style="color: var(--accent-amber);">{{ policy.name }}</td>
+                        <td style="font-family: var(--font-mono);">{{ policy.category|upper }}</td>
+                        <td style="font-family: var(--font-mono);">{{ policy.policy_type|upper }}</td>
+                        <td>
+                            {% if policy.enabled %}
+                            <span class="status-indicator status-online"><span class="status-led"></span><span class="status-text">YES</span></span>
+                            {% else %}
+                            <span class="status-indicator status-offline"><span class="status-led"></span><span class="status-text">NO</span></span>
+                            {% endif %}
+                        </td>
                         <td>{{ policy.description or '-' }}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="5" class="text-center">No policies defined</td></tr>
+                    <tr><td colspan="5" class="text-center">NO POLICIES DEFINED</td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-</div>
+</section>
 {% endblock %}
