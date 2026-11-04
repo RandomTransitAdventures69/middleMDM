@@ -1,198 +1,60 @@
 # middleMDM
 
-**An open-source, self-hosted Mobile Device Management platform.**
+**Your devices. Your server. Your network.**
 
-middleMDM is a project focused on bringing device management back under your control. Instead of relying entirely on expensive cloud-based management platforms, middleMDM aims to provide a self-hosted server for managing, monitoring, and organizing enrolled devices.
+middleMDM is an open-source, self-hosted Mobile Device Management (MDM) platform designed primarily for schools, small organizations, and homelab environments. It provides an alternative to cloud-dependent management platforms like Microsoft Intune.
 
-Built with schools, small organizations, and homelab environments in mind.
+## Features
 
-> **Status: In development**
->
-> middleMDM is a work in progress. Features and functionality are subject to change. Do not use it to manage production devices yet.
-
----
-
-## What is middleMDM?
-
-middleMDM is a client-server device management platform.
-
-The server runs on a Linux machine and provides a centralized web interface for administrators. Enrolled devices run a lightweight client that communicates with the server and reports device information.
-
-The goal is simple: one server, multiple clients, and a dashboard to manage everything.
-
-## Planned features
-
-- **Device inventory** — View enrolled devices, hostnames, operating systems, and hardware information.
-- **Device monitoring** — Track device status and last check-in time.
-- **Network discovery** — Track device IP addresses and identify changes.
-- **Static IP management** — Maintain assigned IP addresses for enrolled devices.
-- **Software inventory** — See installed software reported by clients.
-- **Device groups** — Organize devices by classroom, department, or location.
-- **Policy management** — Create and assign configuration policies.
-- **Web dashboard** — Manage the environment through a browser.
-- **Self-hosted backend** — Keep management infrastructure on your own hardware.
+- **Device Inventory** - Centralized tracking of all enrolled devices with hardware, OS, and network information
+- **Device Groups** - Organize devices into groups (Classrooms, Labs, Faculty, etc.)
+- **Network Management** - IP assignment registry, network discovery, and conflict detection
+- **Software Inventory** - Track installed software across all managed devices
+- **Policy Management** - Create and apply policies to device groups or individual devices
+- **Authentication & Authorization** - Role-based access control with admin accounts
+- **Activity Logging** - Audit trail of all administrative actions
+- **Traditional Enterprise UI** - Classic administrative interface inspired by late 1990s-early 2010s IT tools
 
 ## Architecture
 
-middleMDM uses a client-server architecture.
+- **Server**: Python, Flask, SQLAlchemy, SQLite/PostgreSQL
+- **Client**: Python for Windows (with future support for macOS, Linux, FreeBSD)
+- **API**: RESTful JSON API with authenticated requests
+- **Frontend**: HTML, CSS, vanilla JavaScript (no build pipeline required)
 
-```text
-                 middleMDM SERVER
-                 Linux / Flask
-                       |
-              Web Administration
-                       |
-                 Device Database
-                       |
-                REST API / HTTPS
-                       |
-          +------------+------------+
-          |            |            |
-       CLIENT 1     CLIENT 2     CLIENT 3
-       Windows      Windows      Windows
+## Quick Start
+
+### Server Setup
+
+```bash
+cd server
+pip install -r requirements.txt
+cp .env.example .env  # Edit with your configuration
+flask --app run init-db  # Initialize database
+flask --app run  # Start development server
 ```
 
-### Server
+Default admin credentials: `admin` / `admin123` (change immediately after first login)
 
-The server is designed to run on Linux.
+### Client Setup
 
-Planned technologies:
+See [docs/client-setup.md](docs/client-setup.md) for instructions on enrolling Windows devices.
 
-- Python
-- Flask
-- SQLite for development
-- PostgreSQL for larger deployments
-- HTML, CSS, and JavaScript for the dashboard
+## Documentation
 
-### Client
+- [Installation Guide](docs/installation.md) - Complete installation instructions
+- [Server Setup](docs/server-setup.md) - Server configuration and deployment
+- [Client Setup](docs/client-setup.md) - Client installation and enrollment
+- [Networking](docs/networking.md) - Network configuration and IP management
+- [Security](docs/security.md) - Security best practices
 
-The client is designed primarily for Windows endpoints.
+## Requirements
 
-Its responsibilities include:
-
-- Registering with the middleMDM server.
-- Reporting device information.
-- Sending periodic heartbeats.
-- Reporting network interfaces and IP addresses.
-- Reporting installed software.
-- Receiving authorized management policies.
-
-## Network configuration
-
-middleMDM is designed around a network with predictable device addressing.
-
-**Static IP addresses are required for the documented deployment configuration.**
-
-Example:
-
-| Device | Assigned IP |
-|---|---|
-| middleMDM Server | `10.1.1.1` |
-| Client 01 | `10.1.1.10` |
-| Client 02 | `10.1.1.11` |
-| Client 03 | `10.1.1.12` |
-
-The server should maintain an IP assignment registry associated with each enrolled device.
-
-The system should distinguish between:
-
-- Assigned IP address
-- Currently observed IP address
-- Last successful check-in
-- Network interface information
-
-Static IP configuration must be performed through the operating system's supported network configuration mechanisms. Registering an address in middleMDM does not automatically configure the device.
-
-## Project structure
-
-The intended project structure:
-
-```text
-middleMDM/
-├── server/
-│   ├── app/
-│   │   ├── routes/
-│   │   ├── models/
-│   │   ├── templates/
-│   │   └── static/
-│   ├── config.py
-│   ├── requirements.txt
-│   └── run.py
-│
-├── client/
-│   ├── middlemdm/
-│   ├── config/
-│   └── requirements.txt
-│
-├── docs/
-│   ├── installation.md
-│   ├── server-setup.md
-│   ├── client-setup.md
-│   └── networking.md
-│
-├── tests/
-├── LICENSE
-└── README.md
-```
-
-This structure may change as development progresses.
-
-## Installation
-
-Installation instructions will be published as the project becomes functional.
-
-The intended deployment model is:
-
-1. Prepare a Linux server.
-2. Configure its static IP address.
-3. Install the middleMDM server.
-4. Configure the database and administrator account.
-5. Enroll client devices.
-6. Manage enrolled devices through the web dashboard.
-
-See the `docs/` directory for deployment documentation as it becomes available.
-
-## Security
-
-Device management software needs to be treated seriously.
-
-middleMDM is intended to use:
-
-- Authenticated client registration.
-- Secure client-server communication over HTTPS.
-- Per-device credentials.
-- Administrator authentication.
-- Role-based access control.
-- Audit logging for administrative actions.
-- Explicitly authorized management operations.
-
-middleMDM should not provide unrestricted remote shell access or execute arbitrary commands on enrolled devices.
-
-## Compatibility
-
-| Component | Target platform |
-|---|---|
-| Server | Linux |
-| Primary client | Windows |
-| Dashboard | Modern web browsers |
-| Database | SQLite / PostgreSQL |
-| Future clients | macOS / Linux / FreeBSD |
-
-## Development
-
-middleMDM is currently under active development.
-
-Contributions, suggestions, bug reports, and ideas are welcome.
-
-If you find a bug or have a feature request, open an issue on GitHub.
+- Python 3.8+
+- Linux server (primary) or other OS capable of running Flask
+- Windows 10/11 for client (Windows-first)
+- Network connectivity between server and clients
 
 ## License
 
-See the `LICENSE` file for licensing information.
-
----
-***middleMDM — Your devices. Your server. Your network.***
-
-
-
-**woah time to try a new ai coding agent so uh kilo code do well please**
+See [LICENSE](LICENSE) for details.
