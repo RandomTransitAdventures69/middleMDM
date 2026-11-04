@@ -1,0 +1,4 @@
+requests==2.32.3
+psutil==5.9.8
+WMI==1.5.1; platform_system == "Windows"
+pywin32==306; platform_system == "Windows"

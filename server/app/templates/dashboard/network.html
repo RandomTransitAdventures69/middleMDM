@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Network Discovery - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Network Discovery</h1>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Network Overview</div>
+    <div class="panel-body">
+        <p class="info-text">Network discovery shows registered devices and their reported network information. Only authorized subnets should be configured for active scanning.</p>
+        <div class="alert alert-info">Authenticated client heartbeats are the authoritative source of device status. Reachability checks are supplementary.</div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Registered Devices on Network</div>
+    <div class="panel-body panel-body-no-padding">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Device ID</th>
+                    <th>OS</th>
+                    <th>Reported IP Addresses</th>
+                    <th>Status</th>
+                    <th>Last Seen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if devices %}
+                    {% for device in devices %}
+                    <tr>
+                        <td>{{ device.hostname or 'N/A' }}</td>
+                        <td>{{ device.device_id[:20] }}</td>
+                        <td>{{ device.os_name or '-' }}</td>
+                        <td>
+                            {% if device.network_interfaces %}
+                                {% for iface in device.network_interfaces %}
+                                    {% if iface.get_ip_addresses() %}
+                                        {{ ', '.join(iface.get_ip_addresses()) }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td><span class="status-badge status-{{ 'online' if device.is_online else 'offline' }}">{{ 'Online' if device.is_online else 'Offline' }}</span></td>
+                        <td>{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'Never' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="6" class="text-center">No devices found</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

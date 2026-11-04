@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+</div>
+
+<div class="summary-panels">
+    <div class="panel">
+        <div class="panel-header">Device Summary</div>
+        <div class="panel-body">
+            <div class="stat-row">
+                <span class="stat-label">Total Devices:</span>
+                <span class="stat-value">{{ total_devices }}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Online:</span>
+                <span class="stat-value status-online">{{ online_devices }}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Offline:</span>
+                <span class="stat-value status-offline">{{ offline_devices }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <div class="panel-header">Management</div>
+        <div class="panel-body">
+            <div class="stat-row">
+                <span class="stat-label">Device Groups:</span>
+                <span class="stat-value">{{ groups }}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Policies:</span>
+                <span class="stat-value">{{ policies }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Recent Devices</div>
+    <div class="panel-body panel-body-no-padding">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Hostname</th>
+                    <th>Device ID</th>
+                    <th>OS</th>
+                    <th>Status</th>
+                    <th>Last Check-in</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_devices %}
+                    {% for device in recent_devices %}
+                    <tr>
+                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or 'N/A' }}</a></td>
+                        <td>{{ device.device_id[:16] }}...</td>
+                        <td>{{ device.os_name or 'N/A' }} {{ device.os_version or '' }}</td>
+                        <td><span class="status-badge status-{{ 'online' if device.is_online else 'offline' }}">{{ 'Online' if device.is_online else 'Offline' }}</span></td>
+                        <td>{{ device.last_checkin.strftime('%Y-%m-%d %H:%M') if device.last_checkin else 'Never' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="5" class="text-center">No devices enrolled yet</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Recent Activity</div>
+    <div class="panel-body panel-body-no-padding">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Level</th>
+                    <th>Category</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_events %}
+                    {% for event in recent_events %}
+                    <tr>
+                        <td>{{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td><span class="level-badge level-{{ event.level.lower() }}">{{ event.level }}</span></td>
+                        <td>{{ event.category }}</td>
+                        <td>{{ event.message }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="4" class="text-center">No activity recorded</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

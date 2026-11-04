@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}403 - Access Denied - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">Error 403</div>
+    <div class="panel-body">
+        <h2>Access Denied</h2>
+        <p>{{ message }}</p>
+        <br>
+        <a href="{{ url_for('dashboard.index') }}" class="btn">Return to Dashboard</a>
+    </div>
+</div>

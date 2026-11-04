@@ -20,7 +20,7 @@ class DeviceGroup(db.Model):
         "DeviceGroupMembership", back_populates="group", cascade="all, delete-orphan"
     )
     children: Mapped[list["DeviceGroup"]] = db.relationship(
-        "DeviceGroup", backref=db.backref("parent"), cascade="all, delete-orphan"
+        "DeviceGroup", backref=db.backref("parent", remote_side=[id]), cascade="all, delete-orphan"
     )
 
     def __repr__(self):

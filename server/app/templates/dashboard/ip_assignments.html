@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}IP Assignments - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>IP Assignments</h1>
+</div>
+
+<div class="panel">
+    <div class="panel-header">IP Assignment Registry</div>
+    <div class="panel-body">
+        <p class="info-text">Static IP addresses are required in the documented deployment configuration. The server maintains a registry associating device IDs with assigned addresses.</p>
+        <div class="alert alert-info">Storing a static IP in the database does not automatically configure the network on Windows. Network configuration requires explicit administrator authorization and safe recovery paths.</div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Assigned Addresses</div>
+    <div class="panel-body panel-body-no-padding">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Device</th>
+                    <th>Device ID</th>
+                    <th>Hostname</th>
+                    <th>Assigned IP</th>
+                    <th>Current Observed IP</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if devices %}
+                    {% for device in devices %}
+                    <tr>
+                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">Device {{ device.id }}</a></td>
+                        <td>{{ device.device_id }}</td>
+                        <td>{{ device.hostname or 'N/A' }}</td>
+                        <td><em>Manual configuration required</em></td>
+                        <td>
+                            {% if device.network_interfaces %}
+                                {% for iface in device.network_interfaces %}
+                                    {% for ip in iface.get_ip_addresses() %}
+                                        {{ ip }}
+                                    {% endfor %}
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td><span class="status-badge status-{{ 'online' if device.is_online else 'offline' }}">{{ 'Online' if device.is_online else 'Offline' }}</span></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="6" class="text-center">No devices</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

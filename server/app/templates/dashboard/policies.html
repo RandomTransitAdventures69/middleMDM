@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Policies - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Policy Management</h1>
+</div>
+
+<div class="panel">
+    <div class="panel-header">Policies</div>
+    <div class="panel-body panel-body-no-padding">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Enabled</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if policies %}
+                    {% for policy in policies %}
+                    <tr>
+                        <td>{{ policy.name }}</td>
+                        <td>{{ policy.category }}</td>
+                        <td>{{ policy.policy_type }}</td>
+                        <td>{{ 'Yes' if policy.enabled else 'No' }}</td>
+                        <td>{{ policy.description or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="5" class="text-center">No policies defined</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

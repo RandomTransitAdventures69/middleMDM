@@ -1,0 +1,475 @@
+/* middleMDM - Traditional Enterprise Admin Interface */
+/* Inspired by late 1990s-early 2010s IT administration panels */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Lucida Grande", "Tahoma", "Arial", sans-serif;
+    font-size: 11px;
+    background-color: #d4d0c8;
+    color: #000000;
+    line-height: 1.4;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Top Bar */
+.topbar {
+    background: linear-gradient(to bottom, #ffffff 0%, #ece9d8 100%);
+    border-bottom: 1px solid #aca899;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    font-size: 11px;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.app-title {
+    font-weight: bold;
+    color: #000080;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info {
+    color: #000000;
+}
+
+.topbar-link {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+.topbar-link:hover {
+    color: #ff0000;
+}
+
+/* Main Layout */
+.main-layout {
+    display: flex;
+    flex: 1;
+    background-color: #d4d0c8;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 180px;
+    background-color: #d4d0c8;
+    border-right: 1px solid #808080;
+    padding: 4px;
+}
+
+.nav-menu {
+    list-style: none;
+}
+
+.nav-item {
+    margin-bottom: 2px;
+}
+
+.nav-link {
+    display: block;
+    padding: 4px 8px;
+    color: #000000;
+    text-decoration: none;
+    background-color: #d4d0c8;
+    border: 1px solid transparent;
+}
+
+.nav-link:hover {
+    background-color: #f0f0f0;
+    border: 1px solid #808080;
+}
+
+.nav-link:active {
+    background-color: #c0c0c0;
+    border: 1px inset #808080;
+}
+
+/* Content Area */
+.content {
+    flex: 1;
+    padding: 8px;
+    background-color: #ffffff;
+    border: 1px inset #808080;
+    margin: 4px;
+    overflow-x: auto;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px groove #d4d0c8;
+}
+
+.page-header h1 {
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.page-actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* Panels */
+.panel {
+    border: 1px solid #808080;
+    margin-bottom: 12px;
+    background-color: #ffffff;
+}
+
+.panel-header {
+    background: linear-gradient(to bottom, #ffffff 0%, #d4d0c8 100%);
+    padding: 4px 8px;
+    font-weight: bold;
+    border-bottom: 1px solid #808080;
+    font-size: 11px;
+}
+
+.panel-body {
+    padding: 8px;
+}
+
+.panel-body-no-padding {
+    padding: 0;
+}
+
+/* Summary Panels */
+.summary-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px dotted #c0c0c0;
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: #000000;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #000080;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid;
+    font-size: 10px;
+}
+
+.status-online {
+    background-color: #90ee90;
+    border-color: #228b22;
+    color: #000000;
+}
+
+.status-offline {
+    background-color: #ffc0cb;
+    border-color: #dc143c;
+    color: #000000;
+}
+
+/* Level Badges */
+.level-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid;
+    font-size: 10px;
+}
+
+.level-info {
+    background-color: #add8e6;
+    border-color: #4682b4;
+}
+
+.level-warning {
+    background-color: #ffffe0;
+    border-color: #daa520;
+}
+
+.level-error {
+    background-color: #ffc0cb;
+    border-color: #dc143c;
+}
+
+.level-critical {
+    background-color: #ffb6c1;
+    border-color: #8b0000;
+}
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.data-table thead {
+    background: linear-gradient(to bottom, #ffffff 0%, #d4d0c8 100%);
+}
+
+.data-table th {
+    padding: 4px 8px;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #808080;
+    border-top: none;
+    font-size: 11px;
+}
+
+.data-table td {
+    padding: 3px 8px;
+    border: 1px solid #c0c0c0;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.data-table tbody tr:hover {
+    background-color: #ffffcc;
+}
+
+.data-table a {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+.data-table a:hover {
+    color: #ff0000;
+}
+
+.text-center {
+    text-align: center;
+    color: #808080;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 3px 12px;
+    background: linear-gradient(to bottom, #f0f0f0 0%, #d4d0c8 100%);
+    border: 1px solid #808080;
+    color: #000000;
+    text-decoration: none;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn:hover {
+    background: linear-gradient(to bottom, #ffffff 0%, #ece9d8 100%);
+}
+
+.btn:active {
+    background: linear-gradient(to bottom, #c0c0c0 0%, #d4d0c8 100%);
+    border: 1px inset #808080;
+}
+
+.btn-primary {
+    background: linear-gradient(to bottom, #e0e0ff 0%, #c0c0e0 100%);
+}
+
+.btn-small {
+    padding: 1px 8px;
+    font-size: 10px;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 8px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 2px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.form-input {
+    width: 100%;
+    padding: 3px 4px;
+    border: 1px solid #808080;
+    font-family: inherit;
+    font-size: 11px;
+    background-color: #ffffff;
+}
+
+.form-input:focus {
+    outline: 1px solid #000080;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: normal;
+}
+
+/* Login */
+.login-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #d4d0c8;
+}
+
+.login-box {
+    width: 320px;
+    background-color: #ffffff;
+    border: 2px outset #d4d0c8;
+    padding: 16px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.login-header h1 {
+    font-size: 16px;
+    color: #000080;
+    margin-bottom: 4px;
+}
+
+.login-header p {
+    color: #808080;
+    font-size: 10px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Alerts */
+.alert {
+    padding: 6px 10px;
+    margin-bottom: 10px;
+    border: 1px solid;
+    font-size: 11px;
+}
+
+.alert-error {
+    background-color: #ffc0cb;
+    border-color: #dc143c;
+    color: #000000;
+}
+
+.alert-warning {
+    background-color: #ffffe0;
+    border-color: #daa520;
+    color: #000000;
+}
+
+.alert-info {
+    background-color: #add8e6;
+    border-color: #4682b4;
+    color: #000000;
+}
+
+.alert-success {
+    background-color: #90ee90;
+    border-color: #228b22;
+    color: #000000;
+}
+
+/* Detail Grid */
+.detail-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-row {
+    display: flex;
+    padding: 3px 0;
+    border-bottom: 1px dotted #c0c0c0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: bold;
+    width: 150px;
+    color: #000000;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: #000000;
+    flex: 1;
+}
+
+/* Status Bar */
+.statusbar {
+    height: 20px;
+    background: linear-gradient(to bottom, #ece9d8 0%, #d4d0c8 100%);
+    border-top: 1px solid #aca899;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    color: #000000;
+}
+
+/* Info Text */
+.info-text {
+    margin-bottom: 8px;
+    color: #000000;
+}
+
+code {
+    background-color: #f0f0f0;
+    padding: 1px 4px;
+    border: 1px solid #c0c0c0;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+}

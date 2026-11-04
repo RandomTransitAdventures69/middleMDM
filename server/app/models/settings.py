@@ -1,5 +1,5 @@
 """System settings model."""
-from sqlalchemy import String, Text
+from sqlalchemy import String, Text, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from ..extensions import db
 

@@ -6,7 +6,7 @@ A local development configuration is provided as a default.
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class Config:
@@ -26,6 +26,8 @@ class Config:
         "DATABASE_URL",
         f"sqlite:///{BASE_DIR / 'middlemdm_dev.db'}",
     )
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # --- Application metadata ---
     APP_NAME = "middleMDM"
@@ -69,7 +71,8 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
-    DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
+    DATABASE_URL = SQLALCHEMY_DATABASE_URI
     SESSION_COOKIE_SECURE = False
     SECRET_KEY = "test-secret-key"
     ENROLLMENT_SECRET = "test-enrollment-secret"
@@ -83,7 +86,7 @@ class ProductionConfig(Config):
 
 config_by_name = {
     "development": DevelopmentConfig,
-    "testing": TestingConfig,
     "production": ProductionConfig,
+    "testing": TestingConfig,
     "default": DevelopmentConfig,
 }
