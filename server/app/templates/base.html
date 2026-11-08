@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ app_name }}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='server/app/static/css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -16,7 +16,10 @@
             </div>
             <div class="topbar-right">
                 <span class="user-info">{{ current_user.display_name or current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="topbar-link">Sign out</a>
+                <form method="POST" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="topbar-link">Sign out</button>
+                </form>
             </div>
         </header>
         

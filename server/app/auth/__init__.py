@@ -1,22 +1,12 @@
 """Authentication blueprint."""
+from urllib.parse import urlsplit
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import login_user, logout_user, current_user, login_required
-from flask_wtf import CSRFProtect
-from wtforms import StringField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, Length
 from ..extensions import db, login_manager
 from ..models.user import User
-from ..utils import log_event
+from ..utils import log_event, utcnow
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
-
-
-class LoginForm:
-    """Simple login form (using WTForms-like structure)."""
-    def __init__(self):
-        self.username = StringField("Username", validators=[DataRequired(), Length(max=80)])
-        self.password = PasswordField("Password", validators=[DataRequired()])
-        self.remember_me = BooleanField("Remember me")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -24,7 +14,6 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard.index"))
 
-    form = LoginForm()
     error = None
 
     if request.method == "POST":
@@ -36,7 +25,7 @@ def login():
 
         if user and user.check_password(password) and user.is_active:
             login_user(user, remember=remember)
-            user.last_login = __import__("datetime").datetime.utcnow()
+            user.last_login = utcnow()
             db.session.commit()
 
             log_event(
@@ -45,7 +34,7 @@ def login():
             )
 
             next_page = request.args.get("next")
-            if next_page:
+            if next_page and _is_safe_redirect(next_page):
                 return redirect(next_page)
             return redirect(url_for("dashboard.index"))
         else:
@@ -55,10 +44,24 @@ def login():
                 source="web", ip_address=request.remote_addr,
             )
 
-    return render_template("auth/login.html", form=form, error=error)
+    return render_template("auth/login.html", error=error)
 
 
-@auth_bp.route("/logout")
+def _is_safe_redirect(target):
+    """Allow only same-origin absolute paths as post-login destinations."""
+    if not target.startswith("/") or target.startswith("//") or "\\" in target:
+        return False
+    try:
+        parsed = urlsplit(target)
+    except ValueError:
+        return False
+    return (
+        not parsed.scheme
+        and not parsed.netloc
+    )
+
+
+@auth_bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
     username = current_user.username

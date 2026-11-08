@@ -2,6 +2,7 @@
 import platform
 import psutil
 import os
+import time
 
 
 def get_manufacturer():
@@ -62,11 +63,7 @@ def get_uptime():
     try:
         return int(time.time() - psutil.boot_time())
     except Exception:
-        import time
-        try:
-            return int(time.time() - psutil.boot_time())
-        except Exception:
-            return None
+        return None
 
 
 def get_storage():

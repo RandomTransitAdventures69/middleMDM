@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, Integer, Boolean, DateTime, Text, Float, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..extensions import db
+from ..utils import utcnow
 
 
 class Policy(db.Model):
@@ -15,9 +16,9 @@ class Policy(db.Model):
     policy_type: Mapped[str] = mapped_column(String(60), nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     configuration: Mapped[str] = mapped_column(Text, nullable=True)  # JSON
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, default=utcnow, onupdate=utcnow
     )
 
     assignments: Mapped[list["PolicyAssignment"]] = db.relationship(
@@ -48,7 +49,7 @@ class PolicyAssignment(db.Model):
     group_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("device_groups.id"), nullable=True
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     policy: Mapped["Policy"] = db.relationship("Policy", back_populates="assignments")
 
@@ -73,7 +74,7 @@ class PolicyResult(db.Model):
     policy_type: Mapped[str] = mapped_column(String(60), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False)  # compliant, non_compliant, error
     detail: Mapped[str] = mapped_column(Text, nullable=True)
-    reported_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    reported_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     device: Mapped["Device"] = db.relationship("Device", back_populates="policy_results")
 

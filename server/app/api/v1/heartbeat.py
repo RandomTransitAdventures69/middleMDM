@@ -1,11 +1,10 @@
 """Heartbeat API."""
 from flask import request, jsonify
-from datetime import datetime
 from . import api_bp
 from ...extensions import db
 from ...models.device import Device
 from ...models.api_token import APIToken
-from ...utils import log_event
+from ...utils import utcnow
 
 
 def authenticate_device():
@@ -14,7 +13,10 @@ def authenticate_device():
     if auth_header.startswith("Bearer "):
         token_plain = auth_header[7:]
     else:
-        token_plain = request.headers.get("X-Device-Token") or request.json.get("api_token") if request.is_json else None
+        payload = request.get_json(silent=True)
+        token_plain = request.headers.get("X-Device-Token") or (
+            payload.get("api_token") if isinstance(payload, dict) else None
+        )
     
     if not token_plain:
         return None
@@ -25,11 +27,11 @@ def authenticate_device():
     if not token or not token.is_valid():
         return None
     
-    token.last_used = datetime.utcnow()
+    token.last_used = utcnow()
     db.session.commit()
     
     if token.device_id:
-        return Device.query.get(token.device_id)
+        return db.session.get(Device, token.device_id)
     return None
 
 
@@ -43,12 +45,12 @@ def heartbeat():
     if device.revoked:
         return jsonify({"error": "Device revoked"}), 403
     
-    device.last_checkin = datetime.utcnow()
+    device.last_checkin = utcnow()
     device.status = "online"
     db.session.commit()
     
     return jsonify({
         "status": "ok",
-        "server_time": datetime.utcnow().isoformat(),
+        "server_time": utcnow().isoformat(),
         "next_checkin": 300,
     }), 200

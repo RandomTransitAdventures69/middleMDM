@@ -1,8 +1,9 @@
 """API token model for device authentication."""
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import String, Integer, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from ..extensions import db
+from ..utils import utcnow
 import secrets
 
 
@@ -19,7 +20,7 @@ class APIToken(db.Model):
     user_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("users.id"), nullable=True
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     last_used: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
@@ -36,7 +37,7 @@ class APIToken(db.Model):
     def is_valid(self):
         if self.revoked:
             return False
-        if self.expires_at and datetime.utcnow() > self.expires_at:
+        if self.expires_at and utcnow() > self.expires_at:
             return False
         return True
 

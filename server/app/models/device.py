@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, Integer, Boolean, DateTime, Text, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..extensions import db
+from ..utils import utcnow
 
 
 class DeviceGroup(db.Model):
@@ -14,7 +15,7 @@ class DeviceGroup(db.Model):
     parent_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("device_groups.id"), nullable=True
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     memberships: Mapped[list["DeviceGroupMembership"]] = db.relationship(
         "DeviceGroupMembership", back_populates="group", cascade="all, delete-orphan"
@@ -37,7 +38,7 @@ class DeviceGroupMembership(db.Model):
     group_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("device_groups.id"), nullable=False
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     device: Mapped["Device"] = db.relationship("Device", back_populates="memberships")
     group: Mapped["DeviceGroup"] = db.relationship("DeviceGroup", back_populates="memberships")
@@ -68,13 +69,13 @@ class Device(db.Model):
     client_version: Mapped[str] = mapped_column(String(60), nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="offline", nullable=False)
     last_checkin: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    enrollment_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    enrollment_date: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     revoked: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     revoked_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     notes: Mapped[str] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, default=utcnow, onupdate=utcnow
     )
 
     inventories: Mapped[list["DeviceInventory"]] = db.relationship(
@@ -108,7 +109,7 @@ class Device(db.Model):
     def is_online(self):
         if not self.last_checkin:
             return False
-        return (datetime.utcnow() - self.last_checkin).total_seconds() < 600
+        return (utcnow() - self.last_checkin).total_seconds() < 600
 
     def __repr__(self):
         return f"<Device {self.device_id}>"

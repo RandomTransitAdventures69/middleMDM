@@ -1,12 +1,12 @@
 """Dashboard blueprint."""
-from datetime import datetime, timedelta
+from datetime import timedelta
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from flask_login import login_required, current_user
 from ..models.device import Device, DeviceGroup
 from ..models.policy import Policy, PolicyResult
 from ..models.event import EventLog
 from ..models.inventory import InstalledSoftware
-from ..utils import permission_required
+from ..utils import permission_required, utcnow
 from ..utils.labels import get_device_status_info, get_policy_result_label, format_last_contact
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
@@ -28,7 +28,7 @@ def index():
     failed_results = PolicyResult.query.filter(PolicyResult.status.in_(["non_compliant", "error"])).order_by(PolicyResult.reported_at.desc()).limit(10).all()
 
     # Alerts
-    now = datetime.utcnow()
+    now = utcnow()
     stale_threshold = now - timedelta(hours=24)
     alerts = []
     for d in all_devices:
@@ -123,7 +123,7 @@ def device_detail(device_id):
 def alerts():
     """Alerts view."""
     all_devices = Device.query.all()
-    now = datetime.utcnow()
+    now = utcnow()
     stale_threshold = now - timedelta(hours=24)
     alerts_list = []
     for d in all_devices:

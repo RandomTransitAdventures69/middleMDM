@@ -1,11 +1,10 @@
 """Device enrollment API."""
 from flask import request, jsonify, current_app
-from datetime import datetime
 from . import api_bp
 from ...extensions import db
 from ...models.device import Device
 from ...models.api_token import APIToken
-from ...utils import log_event
+from ...utils import log_event, utcnow
 
 
 @api_bp.route("/enroll", methods=["POST"])
@@ -35,7 +34,7 @@ def enroll_device():
         existing.hostname = hostname or existing.hostname
         existing.os_name = os_name or existing.os_name
         existing.os_version = os_version or existing.os_version
-        existing.last_checkin = datetime.utcnow()
+        existing.last_checkin = utcnow()
         db.session.commit()
         return jsonify({"message": "Device re-enrolled", "device_id": device_id}), 200
     
@@ -54,7 +53,7 @@ def enroll_device():
         total_ram_bytes=data.get("total_ram_bytes"),
         client_version=data.get("client_version"),
         status="online",
-        last_checkin=datetime.utcnow(),
+        last_checkin=utcnow(),
     )
     db.session.add(device)
     db.session.commit()

@@ -55,7 +55,7 @@ class Config:
 
     # CSRF
     WTF_CSRF_ENABLED = True
-    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_CHECK_DEFAULT = True
 
     @staticmethod
     def init_app(app):

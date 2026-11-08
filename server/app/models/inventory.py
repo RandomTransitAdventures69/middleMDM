@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import String, Integer, Boolean, DateTime, Text, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..extensions import db
+from ..utils import utcnow
 
 
 class DeviceInventory(db.Model):
@@ -12,7 +13,7 @@ class DeviceInventory(db.Model):
     device_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("devices.id"), nullable=False
     )
-    collected_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    collected_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     os_name: Mapped[str] = mapped_column(String(120), nullable=True)
     os_version: Mapped[str] = mapped_column(String(120), nullable=True)
     os_build: Mapped[str] = mapped_column(String(120), nullable=True)

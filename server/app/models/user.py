@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from ..extensions import db
 from sqlalchemy import String, Integer, Boolean, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column
+from ..utils import utcnow
 
 
 class Role(db.Model):
@@ -52,9 +53,9 @@ class User(UserMixin, db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     last_login: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, default=utcnow, onupdate=utcnow
     )
     role_id: Mapped[int] = mapped_column(
         Integer, db.ForeignKey("roles.id"), nullable=False

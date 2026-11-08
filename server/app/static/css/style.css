@@ -58,7 +58,14 @@ a:focus, button:focus, input:focus, select:focus { outline: 2px solid var(--focu
 .app-title:hover { text-decoration: none; color: var(--primary); }
 .topbar-right { display: flex; align-items: center; gap: var(--space-3); }
 .user-info { color: var(--text-secondary); font-size: 13px; }
-.topbar-link { font-size: 13px; }
+.topbar-link {
+    font: inherit;
+    font-size: 13px;
+    color: var(--primary);
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
 
 .main-layout { display: flex; flex: 1; }
 .sidebar {

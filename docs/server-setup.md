@@ -33,16 +33,11 @@ DATABASE_URL=postgresql://middlemdm:password@localhost/middlemdm
 
 ## Deployment with Gunicorn
 
-For production, use Gunicorn:
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5001 "server.app:create_app()"
-```
-
-Or from the server directory:
+From the server directory, run Gunicorn with the production configuration:
 ```bash
 cd server
-gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
+pip install -r requirements.txt
+gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app('production')"
 ```
 
 ## Systemd Service (Linux)
@@ -76,5 +71,5 @@ sudo systemctl start middlemdm
 
 Allow traffic on the configured port:
 ```bash
-sudo ufw allow 5000/tcp
+sudo ufw allow 5001/tcp  # default; use your configured PORT
 ```

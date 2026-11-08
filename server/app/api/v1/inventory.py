@@ -1,12 +1,11 @@
 """Inventory API."""
 from flask import request, jsonify
-from datetime import datetime
 import json
 from . import api_bp
 from .heartbeat import authenticate_device
 from ...extensions import db
-from ...models.device import Device
 from ...models.inventory import DeviceInventory, StorageDevice, NetworkInterface, InstalledSoftware
+from ...utils import utcnow
 
 
 @api_bp.route("/inventory", methods=["POST"])
@@ -19,7 +18,22 @@ def update_inventory():
     if device.revoked:
         return jsonify({"error": "Device revoked"}), 403
     
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "A JSON object is required"}), 400
+
+    collection_fields = ("storage", "network_interfaces", "installed_software")
+    if any(
+        not isinstance(data.get(field, []), list)
+        or any(not isinstance(item, dict) for item in data.get(field, []))
+        for field in collection_fields
+    ):
+        return jsonify({"error": "Inventory collections must be lists of objects"}), 400
+    if any(
+        not isinstance(iface.get("ip_addresses", []), list)
+        for iface in data.get("network_interfaces", [])
+    ):
+        return jsonify({"error": "Interface IP addresses must be a list"}), 400
     
     # Update device basic info
     device.hostname = data.get("hostname", device.hostname)
@@ -30,7 +44,7 @@ def update_inventory():
     device.cpu_cores = data.get("cpu_cores", device.cpu_cores)
     device.total_ram_bytes = data.get("total_ram_bytes", device.total_ram_bytes)
     device.client_version = data.get("client_version", device.client_version)
-    device.last_checkin = datetime.utcnow()
+    device.last_checkin = utcnow()
     device.status = "online"
     
     # Create inventory snapshot

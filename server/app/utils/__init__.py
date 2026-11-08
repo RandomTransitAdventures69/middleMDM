@@ -1,10 +1,15 @@
 """Utility helpers."""
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import wraps
 from flask import request, jsonify, current_app
 from flask_login import current_user
+
+
+def utcnow():
+    """Return the current UTC time as a naive value for existing database columns."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 def permission_required(perm):

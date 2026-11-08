@@ -46,6 +46,22 @@ class AuthTestCase(unittest.TestCase):
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
+    def test_login_rejects_external_next_url(self):
+        response = self.client.post(
+            '/auth/login?next=//attacker.example',
+            data={'username': 'admin', 'password': 'testpass'},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers['Location'], '/dashboard/')
+
+    def test_logout_does_not_accept_get(self):
+        self.client.post('/auth/login', data={
+            'username': 'admin',
+            'password': 'testpass',
+        })
+        response = self.client.get('/auth/logout')
+        self.assertEqual(response.status_code, 405)
+
 
 if __name__ == '__main__':
     unittest.main()

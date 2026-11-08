@@ -1,8 +1,8 @@
 """Flask application factory for middleMDM."""
 from pathlib import Path
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from config import Config, config_by_name
-from .extensions import init_extensions
+from .extensions import csrf, init_extensions
 
 
 def create_app(config_name="default"):
@@ -25,6 +25,11 @@ def create_app(config_name="default"):
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(dashboard_bp, url_prefix="/dashboard")
     app.register_blueprint(api_bp, url_prefix="/api/v1")
+    csrf.exempt(api_bp)
+
+    @app.route("/")
+    def index():
+        return redirect(url_for("dashboard.index"))
 
     # Register error handlers
     @app.errorhandler(404)

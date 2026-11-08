@@ -5,7 +5,7 @@
 middleMDM requires network connectivity between the server and clients.
 
 ### Ports
-- Server web interface and API: TCP 5000 (configurable)
+- Server web interface and API: TCP 5001 by default (configurable with `PORT`)
 - For HTTPS in production: TCP 443
 
 ### Firewall Rules
@@ -14,7 +14,7 @@ middleMDM requires network connectivity between the server and clients.
 ```bash
 sudo ufw allow from 10.1.1.0/24 to any port 5001
 # Or allow all if needed
-sudo ufw allow 5000/tcp
+sudo ufw allow 5001/tcp
 ```
 
 **Clients (Windows):**
