@@ -5,15 +5,17 @@ A local development configuration is provided as a default.
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 
 
 class Config:
     """Base configuration shared by all environments."""
 
     # --- Core ---
-    SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "middlemdm_session")
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
@@ -37,7 +39,7 @@ class Config:
     API_TOKEN_EXPIRY_SECONDS = int(os.environ.get("API_TOKEN_EXPIRY_SECONDS", "86400"))
 
     # --- Device enrollment ---
-    ENROLLMENT_SECRET = os.environ.get("ENROLLMENT_SECRET", "dev-enrollment-secret-change-me")
+    ENROLLMENT_SECRET = os.environ.get("ENROLLMENT_SECRET")
 
     # --- Email / SMTP (optional, for future account recovery) ---
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
@@ -90,5 +92,38 @@ config_by_name = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
     "testing": TestingConfig,
-    "default": DevelopmentConfig,
+    "default": ProductionConfig,
 }
+
+
+def validate_security_config(app):
+    """Reject missing, weak, or reused secrets outside the test environment."""
+    if app.config.get("TESTING"):
+        return
+
+    known_weak_secrets = {
+        "change-me-in-production",
+        "change-this-to-a-random-secret-key-in-production",
+        "dev-enrollment-secret-change-me",
+        "test-secret-key",
+        "test-enrollment-secret",
+    }
+    secret_names = ("SECRET_KEY", "ENROLLMENT_SECRET")
+    secrets = {}
+    for name in secret_names:
+        value = app.config.get(name)
+        if (
+            not isinstance(value, str)
+            or value != value.strip()
+            or len(value) < 32
+            or len(set(value)) < 16
+            or value.lower() in known_weak_secrets
+            or value.lower().startswith(("change-", "replace-with", "your-"))
+        ):
+            raise RuntimeError(
+                f"{name} must be configured with a unique random value of at least 32 characters"
+            )
+        secrets[name] = value
+
+    if secrets["SECRET_KEY"] == secrets["ENROLLMENT_SECRET"]:
+        raise RuntimeError("SECRET_KEY and ENROLLMENT_SECRET must be different values")

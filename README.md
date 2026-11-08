@@ -29,12 +29,12 @@ middleMDM is an open-source, self-hosted Mobile Device Management (MDM) platform
 ```bash
 cd server
 pip install -r requirements.txt
-cp .env.example .env  # Edit with your configuration
-flask --app run init-db  # Initialize database
-flask --app run  # Start development server
+cp .env.example .env  # Set both secrets to separate random values
+flask --app run init-db  # Initialize database and set the admin password
+FLASK_ENV=development flask --app run  # Local development only
 ```
 
-Default admin credentials: `admin` / `admin123` (change immediately after first login)
+Generate two different secrets with `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` and put one each in `SECRET_KEY` and `ENROLLMENT_SECRET` in `.env`. Database initialization securely prompts for the initial administrator password. For local development, set `FLASK_ENV=development` in `.env`; production deployments should use HTTPS through a trusted TLS-terminating reverse proxy.
 
 ### Client Setup
 

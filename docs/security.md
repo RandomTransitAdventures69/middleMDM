@@ -12,6 +12,7 @@
 
 ### Administrator Authentication
 - Secure password hashing using Werkzeug
+- The initial administrator password is entered interactively during database setup; no shared default password is used
 - Session management with secure cookies
 - CSRF protection on forms
 - Role-based permissions
@@ -24,9 +25,9 @@
 ## Best Practices
 
 ### Server Security
-1. **Change default credentials** - Change admin password immediately
-2. **Use strong secrets** - Generate random SECRET_KEY and ENROLLMENT_SECRET
-3. **Enable HTTPS in production** - Set SESSION_COOKIE_SECURE=true and use reverse proxy
+1. **Use separate strong secrets** - Set random `SECRET_KEY` and `ENROLLMENT_SECRET` values of at least 32 characters
+2. **Use HTTPS in production** - Terminate TLS at a trusted reverse proxy; keep Gunicorn on loopback
+3. **Protect configuration files** - Restrict `.env` to the server service account
 4. **Keep software updated** - Update dependencies regularly
 5. **Restrict network access** - Use firewall rules to limit access
 6. **Use PostgreSQL in production** - SQLite is for development only
@@ -34,8 +35,9 @@
 
 ### Client Security
 1. **Protect enrollment secret** - Only share with authorized devices
-2. **Run as service with appropriate permissions** - Follow least privilege principle
-3. **Keep client updated** - Deploy updates through controlled process
+2. **Use HTTPS** - Client requests verify the server certificate; remote HTTP URLs are rejected
+3. **Run as service with appropriate permissions** - Follow least privilege principle
+4. **Keep client updated** - Deploy updates through controlled process
 
 ### Network Security
 1. **Use static IPs as documented** - Configure proper network addressing

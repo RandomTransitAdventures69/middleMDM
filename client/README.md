@@ -15,10 +15,12 @@ Create a configuration file at `%PROGRAMDATA%\middleMDM\config.json`:
 
 ```json
 {
-  "server_url": "http://10.1.1.1:5001",
+  "server_url": "https://mdm.example",
   "enrollment_secret": "your-enrollment-secret"
 }
 ```
+
+Use the HTTPS URL from your trusted reverse proxy. TLS certificate verification remains enabled. HTTP is rejected except for explicitly enabled loopback development.
 
 ## Usage
 

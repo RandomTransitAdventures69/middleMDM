@@ -1,7 +1,7 @@
 """Flask application factory for middleMDM."""
 from pathlib import Path
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-from config import Config, config_by_name
+from config import Config, config_by_name, validate_security_config
 from .extensions import csrf, init_extensions
 
 
@@ -13,6 +13,7 @@ def create_app(config_name="default"):
         static_folder=str(Path(__file__).parent / "static"),
     )
     app.config.from_object(config_by_name.get(config_name, Config))
+    validate_security_config(app)
 
     # Initialize extensions
     init_extensions(app)
@@ -64,6 +65,7 @@ def create_app(config_name="default"):
     @app.cli.command("init-db")
     def init_db():
         """Initialize the database with default roles and admin user."""
+        import click
         from .models.user import User, Role, DEFAULT_ROLES
         from .models.settings import SystemSetting
         from .extensions import db
@@ -88,17 +90,26 @@ def create_app(config_name="default"):
 
         # Create default admin if none exists
         if User.query.count() == 0:
+            password = click.prompt(
+                "Set the initial administrator password",
+                hide_input=True,
+                confirmation_prompt=True,
+            )
+            if len(password) < 12:
+                raise click.ClickException(
+                    "Administrator password must be at least 12 characters"
+                )
             admin_role = role_map["super_admin"]
             admin = User(
                 username="admin",
-                password="admin123",
+                password=password,
                 role_id=admin_role.id,
                 email="admin@middlemdm.local",
                 display_name="Administrator",
             )
             db.session.add(admin)
             db.session.commit()
-            print("Created default admin user 'admin' with password 'admin123'")
+            print("Created the initial administrator account 'admin'.")
 
         # Set default settings
         defaults = {

@@ -4,14 +4,20 @@
 
 ### Environment Variables
 
-| Variable | Default | Description |
+| Variable | Required value | Description |
 |----------|---------|-------------|
-| SECRET_KEY | change-me-in-production | Flask secret key for sessions |
+| SECRET_KEY | unique random value, at least 32 characters | Flask secret key for sessions |
 | DATABASE_URL | sqlite:///middlemdm_dev.db | Database connection string |
-| ENROLLMENT_SECRET | dev-enrollment-secret-change-me | Secret for device enrollment |
-| SESSION_COOKIE_SECURE | false | Set to true for HTTPS |
-| HOST | 0.0.0.0 | Server bind address |
+| ENROLLMENT_SECRET | a different unique random value, at least 32 characters | Secret for device enrollment |
+| SESSION_COOKIE_SECURE | true in production | Secure session-cookie setting |
+| HOST | 127.0.0.1 in production | Server bind address |
 | PORT | 5001 | Server port |
+
+Generate each secret separately:
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+Set both values in `server/.env`; never reuse one secret for the other. The application rejects missing, short, or example secrets outside tests. Keep `.env` readable only by the service account.
 
 ### Database Setup
 
@@ -33,11 +39,11 @@ DATABASE_URL=postgresql://middlemdm:password@localhost/middlemdm
 
 ## Deployment with Gunicorn
 
-From the server directory, run Gunicorn with the production configuration:
+Terminate HTTPS at a trusted reverse proxy and keep Gunicorn bound to loopback. From the server directory:
 ```bash
 cd server
 pip install -r requirements.txt
-gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app('production')"
+gunicorn -w 4 -b 127.0.0.1:5001 "app:create_app('production')"
 ```
 
 ## Systemd Service (Linux)
@@ -53,7 +59,8 @@ User=middlemdm
 Group=middlemdm
 WorkingDirectory=/opt/middleMDM/server
 Environment=PATH=/opt/middleMDM/server/venv/bin
-ExecStart=/opt/middleMDM/server/venv/bin/gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
+EnvironmentFile=/opt/middleMDM/server/.env
+ExecStart=/opt/middleMDM/server/venv/bin/gunicorn -w 4 -b 127.0.0.1:5001 "app:create_app('production')"
 Restart=always
 
 [Install]
@@ -71,5 +78,5 @@ sudo systemctl start middlemdm
 
 Allow traffic on the configured port:
 ```bash
-sudo ufw allow 5001/tcp  # default; use your configured PORT
+sudo ufw allow 443/tcp  # HTTPS reverse proxy
 ```

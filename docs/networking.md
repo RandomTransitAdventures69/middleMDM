@@ -5,20 +5,19 @@
 middleMDM requires network connectivity between the server and clients.
 
 ### Ports
-- Server web interface and API: TCP 5001 by default (configurable with `PORT`)
-- For HTTPS in production: TCP 443
+- Production clients and web interface use HTTPS on TCP 443 through a trusted reverse proxy.
+- Gunicorn listens on loopback TCP 5001 by default; do not expose this backend port to clients.
+- Local development may use HTTP on TCP 5001.
 
 ### Firewall Rules
 
 **Server (Linux):**
 ```bash
-sudo ufw allow from 10.1.1.0/24 to any port 5001
-# Or allow all if needed
-sudo ufw allow 5001/tcp
+sudo ufw allow 443/tcp
 ```
 
 **Clients (Windows):**
-Allow outbound connections to server on configured port.
+Allow outbound HTTPS connections to the server on TCP 443. Do not send enrollment secrets or device tokens over remote HTTP.
 
 ## Static IP Configuration
 

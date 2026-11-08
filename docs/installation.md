@@ -9,7 +9,7 @@ middleMDM consists of a server component (Linux recommended) and client componen
 ### Server Requirements
 - Linux server (Ubuntu 20.04/22.04 recommended) or other Linux distribution
 - Python 3.8 or higher
-- Network access on port 5001 (or as configured)
+- Public HTTPS access on port 443; keep the Gunicorn backend on loopback port 5001
 - For production: PostgreSQL database recommended
 
 ### Client Requirements
@@ -40,29 +40,37 @@ cp .env.example .env
 
 Edit `.env` with your settings:
 ```bash
-SECRET_KEY=your-random-secret-key-here
-ENROLLMENT_SECRET=your-device-enrollment-secret-here
+SECRET_KEY=
+ENROLLMENT_SECRET=
 DATABASE_URL=sqlite:///./middlemdm_dev.db  # or PostgreSQL for production
 ```
+
+Generate each secret separately with:
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+Do not use the example placeholders or reuse the same value for both secrets.
 
 ### 4. Initialize Database
 ```bash
 flask --app run init-db
 ```
 
-This creates the database schema and default admin user (admin/admin123).
+This creates the database schema and prompts securely for a new administrator password (at least 12 characters).
 
 ### 5. Start the Server
 
 #### Development
 ```bash
+export FLASK_ENV=development
 flask --app run
 ```
 
 #### Production with Gunicorn
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
+gunicorn -w 4 -b 127.0.0.1:5001 "app:create_app('production')"
 ```
+In production, expose the service only through a trusted HTTPS reverse proxy.
 
 ## Client Installation
 
@@ -70,8 +78,7 @@ See [client-setup.md](client-setup.md) for detailed client installation instruct
 
 ## Post-Installation
 
-1. Access the web dashboard at `http://your-server:5001`
-2. Log in with default credentials (admin/admin123)
-3. **Change the default password immediately**
-4. Configure enrollment secret
-5. Set up network configuration per [networking.md](networking.md)
+1. Access the web dashboard over HTTPS through your reverse proxy.
+2. Log in as `admin` using the password entered during database initialization.
+3. Configure the enrollment secret on authorized clients only.
+4. Set up network configuration per [networking.md](networking.md).
