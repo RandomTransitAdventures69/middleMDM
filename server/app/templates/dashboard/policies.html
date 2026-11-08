@@ -1,45 +1,50 @@
 {% extends "base.html" %}
-
-{% block title %}POLICIES - {{ app_name }}{% endblock %}
-
+{% block title %}Settings profiles - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>POLICY MANAGEMENT</h1>
+    <h1>Settings profiles</h1>
+    <div class="page-actions">
+        <button type="button" class="btn btn-primary" disabled title="Profile creation UI not fully connected to backend workflows">Create a settings profile</button>
+    </div>
 </div>
 
 <section class="panel">
-    <header class="panel-header">POLICIES</header>
+    <header class="panel-header">About settings profiles</header>
+    <div class="panel-body">
+        <p><strong>Settings profiles</strong> <span class="text-muted">(technical: configuration profiles / policies)</span> let you send a group of settings to managed devices. For example, a profile might require a password, set screen lock timing, or configure security options.</p>
+        <div class="help-box">
+            <strong>How it works</strong>
+            <ul style="margin-left: 18px; margin-top: 4px;">
+                <li>You create a profile and choose which devices or groups receive it.</li>
+                <li>Devices apply settings when they next contact the server.</li>
+                <li>If settings conflict, the device may report that it could not apply them.</li>
+            </ul>
+        </div>
+        <div class="help-box" style="margin-top: var(--space-2);">
+            <strong>Example: Drive encryption (BitLocker)</strong>
+            If you enable drive encryption settings, Windows can encrypt data on the device drive. Make sure recovery key handling is configured and documented before applying encryption broadly. <span class="technical-detail">Technical: BitLocker-related settings require supported Windows editions and proper key escrow/recovery planning.</span>
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <header class="panel-header">Profiles</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
-            <thead>
-                <tr>
-                    <th>NAME</th>
-                    <th>CATEGORY</th>
-                    <th>TYPE</th>
-                    <th>ENABLED</th>
-                    <th>DESCRIPTION</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Description</th></tr></thead>
             <tbody>
-                {% if policies %}
-                    {% for policy in policies %}
-                    <tr>
-                        <td style="color: var(--accent-amber);">{{ policy.name }}</td>
-                        <td style="font-family: var(--font-mono);">{{ policy.category|upper }}</td>
-                        <td style="font-family: var(--font-mono);">{{ policy.policy_type|upper }}</td>
-                        <td>
-                            {% if policy.enabled %}
-                            <span class="status-indicator status-online"><span class="status-led"></span><span class="status-text">YES</span></span>
-                            {% else %}
-                            <span class="status-indicator status-offline"><span class="status-led"></span><span class="status-text">NO</span></span>
-                            {% endif %}
-                        </td>
-                        <td>{{ policy.description or '-' }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="5" class="text-center">NO POLICIES DEFINED</td></tr>
-                {% endif %}
+            {% if policies %}
+                {% for policy in policies %}
+                <tr>
+                    <td><strong>{{ policy.name }}</strong><div class="technical-detail">Technical: {{ policy.category }}/{{ policy.policy_type }}</div></td>
+                    <td>Settings profile</td>
+                    <td>{% if policy.enabled %}<span class="badge badge-success">Enabled</span>{% else %}<span class="badge badge-muted">Disabled</span>{% endif %}</td>
+                    <td>{{ policy.description or '—' }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="text-center"><div class="empty-state"><p>No settings profiles yet.</p><p class="text-muted">Profile creation/editing UI can be added when the backend workflow is ready.</p></div></td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

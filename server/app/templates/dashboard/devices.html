@@ -1,64 +1,63 @@
 {% extends "base.html" %}
-
-{% block title %}DEVICES - {{ app_name }}{% endblock %}
-
+{% block title %}Devices - {{ app_name }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>DEVICE INVENTORY</h1>
+    <h1>Devices</h1>
     <div class="page-actions">
-        <span class="btn" style="cursor: default;">TOTAL: {{ devices|length }}</span>
+        <span class="badge badge-muted">{{ devices|length }} shown</span>
     </div>
 </div>
 
 <section class="panel">
-    <header class="panel-header">ENROLLED DEVICES</header>
-    <div class="panel-body panel-body-no-padding">
-        <table class="data-table">
+    <header class="panel-header">Device inventory</header>
+    <div class="panel-body">
+        <form method="get" action="{{ url_for('dashboard.devices') }}" class="filters" role="search">
+            <label for="q" class="form-label" style="margin:0;">Search</label>
+            <input type="text" id="q" name="q" class="form-input" value="{{ q }}" placeholder="Name, ID, OS, manufacturer...">
+            <label for="status" class="form-label" style="margin:0;">Status</label>
+            <select id="status" name="status" class="form-select">
+                <option value="">All statuses</option>
+                <option value="online" {% if status_filter=='online' %}selected{% endif %}>Online recently</option>
+                <option value="offline" {% if status_filter=='offline' %}selected{% endif %}>Offline</option>
+                <option value="needs_attention" {% if status_filter=='needs_attention' %}selected{% endif %}>Needs attention</option>
+                <option value="setup_incomplete" {% if status_filter=='setup_incomplete' %}selected{% endif %}>Setup incomplete</option>
+                <option value="revoked" {% if status_filter=='revoked' %}selected{% endif %}>Removed from management</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            {% if q or status_filter %}<a href="{{ url_for('dashboard.devices') }}" class="btn">Clear</a>{% endif %}
+        </form>
+    </div>
+    <div class="panel-body-no-padding">
+        <table class="data-table" id="devices-table">
             <thead>
                 <tr>
-                    <th>HOSTNAME</th>
-                    <th>DEVICE ID</th>
-                    <th>MANUFACTURER</th>
-                    <th>MODEL</th>
-                    <th>OS</th>
-                    <th>VERSION</th>
-                    <th>STATUS</th>
-                    <th>LAST CHECK-IN</th>
-                    <th>ENROLLED</th>
-                    <th>ACTIONS</th>
+                    <th>Device name</th>
+                    <th>Operating system</th>
+                    <th>Status</th>
+                    <th>Last contacted server</th>
+                    <th>Added to management</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% if devices %}
-                    {% for device in devices %}
-                    <tr>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or 'UNNAMED' }}</a></td>
-                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.device_id }}</td>
-                        <td>{{ device.manufacturer or '-' }}</td>
-                        <td>{{ device.model or '-' }}</td>
-                        <td>{{ device.os_name or '-' }}</td>
-                        <td>{{ device.os_version or '-' }}</td>
-                        <td>
-                            {% if device.is_online %}
-                            <span class="status-indicator status-online">
-                                <span class="status-led"></span>
-                                <span class="status-text">ON</span>
-                            </span>
-                            {% else %}
-                            <span class="status-indicator status-offline">
-                                <span class="status-led"></span>
-                                <span class="status-text">OFF</span>
-                            </span>
-                            {% endif %}
-                        </td>
-                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M') if device.last_checkin else 'NEVER' }}</td>
-                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.enrollment_date.strftime('%Y-%m-%d') if device.enrollment_date else '-' }}</td>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}" class="btn btn-small">INSPECT</a></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="10" class="text-center">NO DEVICES ENROLLED</td></tr>
-                {% endif %}
+            {% if devices %}
+                {% for device, si in devices %}
+                <tr data-search="{{ (device.hostname or '') }} {{ device.device_id }} {{ (device.os_name or '') }} {{ (device.manufacturer or '') }} {{ (device.model or '') }} {{ si.label }}">
+                    <td>
+                        <a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}"><strong>{{ device.hostname or 'Unnamed device' }}</strong></a>
+                        <div class="technical-detail" title="Technical: device_id">ID: {{ device.device_id }}</div>
+                        {% if device.manufacturer or device.model %}<div class="text-muted">{{ device.manufacturer or '' }} {{ device.model or '' }}</div>{% endif %}
+                    </td>
+                    <td>{{ device.os_name or 'Unknown' }} {{ device.os_version or '' }}</td>
+                    <td><span class="status-indicator status-{{ si.key }}" title="Technical: {{ si.technical }}"><span class="status-dot"></span><span class="status-text">{{ si.label }}</span></span>{% if si.count is defined %} <span class="text-muted">({{ si.count }})</span>{% endif %}</td>
+                    <td class="mono" title="Technical: last check-in">{{ format_last_contact(device.last_checkin) }}</td>
+                    <td class="mono" title="Technical: enrollment date">{{ device.enrollment_date.strftime('%Y-%m-%d') if device.enrollment_date else '—' }}</td>
+                    <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}" class="btn btn-small">View details</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="6" class="text-center"><div class="empty-state"><p>No devices match your filters.</p><p class="text-muted">Try clearing the search or status filter.</p></div></td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

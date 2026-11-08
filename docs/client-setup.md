@@ -27,7 +27,7 @@ notepad "%PROGRAMDATA%\middleMDM\config.json"
 Add configuration:
 ```json
 {
-  "server_url": "http://10.1.1.1:5000",
+  "server_url": "http://10.1.1.1:5001",
   "enrollment_secret": "your-enrollment-secret-from-server",
   "heartbeat_interval": 300,
   "inventory_interval": 3600

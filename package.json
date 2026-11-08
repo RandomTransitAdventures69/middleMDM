@@ -1,0 +1,13 @@
+{
+  "name": "middlemdm",
+  "version": "1.0.0",
+  "description": "middleMDM - Self-hosted Mobile Device Management Platform",
+  "scripts": {
+    "start": "cd server && python3 run.py",
+    "dev": "cd server && FLASK_ENV=development python3 run.py",
+    "install-python": "pip3 install -r server/requirements.txt",
+    "test": "cd server && PYTHONPATH=/Users/randomtransitadventures/Downloads/middleMDM/server python3 -m pytest ../tests/ -v"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

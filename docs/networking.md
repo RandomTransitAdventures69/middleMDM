@@ -12,7 +12,7 @@ middleMDM requires network connectivity between the server and clients.
 
 **Server (Linux):**
 ```bash
-sudo ufw allow from 10.1.1.0/24 to any port 5000
+sudo ufw allow from 10.1.1.0/24 to any port 5001
 # Or allow all if needed
 sudo ufw allow 5000/tcp
 ```

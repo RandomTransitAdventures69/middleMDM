@@ -1,37 +1,25 @@
 {% extends "base.html" %}
-
-{% block title %}SOFTWARE - {{ app_name }}{% endblock %}
-
+{% block title %}Software - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>SOFTWARE INVENTORY</h1>
-</div>
-
+<div class="page-header"><h1>Software inventory</h1></div>
 <section class="panel">
-    <header class="panel-header">INSTALLED APPLICATIONS</header>
+    <header class="panel-header">Installed applications (reported by devices)</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
-            <thead>
-                <tr>
-                    <th>APPLICATION</th>
-                    <th>VERSION</th>
-                    <th>PUBLISHER</th>
-                    <th>DEVICE</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Application</th><th>Version</th><th>Publisher</th><th>Device</th></tr></thead>
             <tbody>
-                {% if software %}
-                    {% for sw in software %}
-                    <tr>
-                        <td style="color: var(--text-primary);">{{ sw.name }}</td>
-                        <td style="font-family: var(--font-mono);">{{ sw.version or '-' }}</td>
-                        <td>{{ sw.publisher or '-' }}</td>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=sw.device_id) }}">DEVICE #{{ sw.device_id }}</a></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="4" class="text-center">NO SOFTWARE DATA</td></tr>
-                {% endif %}
+            {% if software %}
+                {% for sw in software %}
+                <tr>
+                    <td>{{ sw.name }}</td>
+                    <td class="mono">{{ sw.version or '—' }}</td>
+                    <td>{{ sw.publisher or '—' }}</td>
+                    <td><a href="{{ url_for('dashboard.device_detail', device_id=sw.device_id) }}">Device #{{ sw.device_id }}</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="text-center">No software inventory reported yet.</td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

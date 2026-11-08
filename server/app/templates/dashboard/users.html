@@ -1,49 +1,27 @@
 {% extends "base.html" %}
-
-{% block title %}USERS - {{ app_name }}{% endblock %}
-
+{% block title %}Users - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>ADMINISTRATOR ACCOUNTS</h1>
-</div>
-
+<div class="page-header"><h1>Users</h1></div>
 <section class="panel">
-    <header class="panel-header">USERS</header>
+    <header class="panel-header">Administrator accounts</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
-            <thead>
-                <tr>
-                    <th>USERNAME</th>
-                    <th>DISPLAY NAME</th>
-                    <th>EMAIL</th>
-                    <th>ROLE</th>
-                    <th>ACTIVE</th>
-                    <th>LAST LOGIN</th>
-                    <th>CREATED</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Username</th><th>Display name</th><th>Email</th><th>Role</th><th>Active</th><th>Last sign-in</th></tr></thead>
             <tbody>
-                {% if users %}
-                    {% for user in users %}
-                    <tr>
-                        <td style="color: var(--accent-blue); font-weight: 600;">{{ user.username }}</td>
-                        <td>{{ user.display_name or '-' }}</td>
-                        <td style="font-family: var(--font-mono);">{{ user.email or '-' }}</td>
-                        <td style="font-family: var(--font-mono);">{{ user.role.display_name if user.role else '-' }}</td>
-                        <td>
-                            {% if user.is_active %}
-                            <span class="status-indicator status-online"><span class="status-led"></span><span class="status-text">YES</span></span>
-                            {% else %}
-                            <span class="status-indicator status-offline"><span class="status-led"></span><span class="status-text">NO</span></span>
-                            {% endif %}
-                        </td>
-                        <td style="font-family: var(--font-mono);">{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'NEVER' }}</td>
-                        <td style="font-family: var(--font-mono);">{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '-' }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="7" class="text-center">NO USERS</td></tr>
-                {% endif %}
+            {% if users %}
+                {% for user in users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td>{{ user.display_name or '—' }}</td>
+                    <td class="mono">{{ user.email or '—' }}</td>
+                    <td>{{ user.role.display_name if user.role else '—' }}</td>
+                    <td>{% if user.is_active %}Yes{% else %}No{% endif %}</td>
+                    <td class="mono">{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else 'Never' }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="6" class="text-center">No users.</td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

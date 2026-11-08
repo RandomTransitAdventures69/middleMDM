@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Alerts - {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Alerts</h1>
+</div>
+
+<section class="panel">
+    <header class="panel-header">Issues that may need attention</header>
+    <div class="panel-body">
+        <p class="form-help">This page shows problems detected from available data: devices that have not contacted the server recently, setup issues, and settings that could not be applied. Technical details are included for troubleshooting.</p>
+    </div>
+    <div class="panel-body-no-padding">
+        <table class="data-table">
+            <thead><tr><th>Issue</th><th>Device</th><th>What happened</th><th>Suggested action</th></tr></thead>
+            <tbody>
+            {% if alerts %}
+                {% for a in alerts %}
+                <tr>
+                    <td><span class="level-badge level-{{ 'error' if a.severity=='error' else 'warning' }}">{{ a.severity|upper }}</span> <strong>{{ a.title }}</strong></td>
+                    <td><a href="{{ url_for('dashboard.device_detail', device_id=a.device.id) }}">{{ a.device.hostname or a.device.device_id }}</a></td>
+                    <td>{{ a.message }}{% if a.detail %}<div class="technical-detail">{{ a.detail }}</div>{% endif %}</td>
+                    <td>
+                        {% if a.type == 'checkin' %}Check that the device is on, connected to the network, and the middleMDM client is running.
+                        {% elif a.type == 'enrollment' %}Verify the client is installed and configured with the correct server URL and enrollment secret.
+                        {% elif a.type == 'policy' %}Review the settings profile and device details. Try applying settings again after fixing conflicts.
+                        {% else %}Review device details and recent activity.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="text-center"><div class="empty-state"><p>No alerts right now.</p><p class="text-muted">Devices and settings will appear here if issues are detected.</p></div></td></tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

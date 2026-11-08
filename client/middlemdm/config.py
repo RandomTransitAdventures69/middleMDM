@@ -9,7 +9,7 @@ CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
 DEFAULT_CONFIG = {
-    "server_url": "http://10.1.1.1:5000",
+    "server_url": "http://10.1.1.1:5001",
     "device_id": None,
     "api_token": None,
     "enrollment_secret": None,

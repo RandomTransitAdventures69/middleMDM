@@ -9,7 +9,7 @@ middleMDM consists of a server component (Linux recommended) and client componen
 ### Server Requirements
 - Linux server (Ubuntu 20.04/22.04 recommended) or other Linux distribution
 - Python 3.8 or higher
-- Network access on port 5000 (or as configured)
+- Network access on port 5001 (or as configured)
 - For production: PostgreSQL database recommended
 
 ### Client Requirements
@@ -61,7 +61,7 @@ flask --app run
 
 #### Production with Gunicorn
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app()"
+gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
 ```
 
 ## Client Installation
@@ -70,7 +70,7 @@ See [client-setup.md](client-setup.md) for detailed client installation instruct
 
 ## Post-Installation
 
-1. Access the web dashboard at `http://your-server:5000`
+1. Access the web dashboard at `http://your-server:5001`
 2. Log in with default credentials (admin/admin123)
 3. **Change the default password immediately**
 4. Configure enrollment secret

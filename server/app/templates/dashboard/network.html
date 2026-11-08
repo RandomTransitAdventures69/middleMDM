@@ -1,67 +1,35 @@
 {% extends "base.html" %}
-
-{% block title %}NETWORK DISCOVERY - {{ app_name }}{% endblock %}
-
+{% block title %}Network - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>NETWORK DISCOVERY</h1>
-</div>
-
+<div class="page-header"><h1>Network</h1></div>
 <section class="panel">
-    <header class="panel-header">STATUS</header>
+    <header class="panel-header">How this works</header>
     <div class="panel-body">
-        <p class="info-text">Network discovery monitors registered devices and reported network configuration. Authenticated client heartbeats are the authoritative source of device status.</p>
-        <div class="alert alert-info">Only authorized subnets should be configured for active scanning.</div>
+        <p>This page shows network information reported by managed devices. A device is considered reachable based on when it last contacted the server <span class="text-muted">(technical: heartbeat/check-in)</span>.</p>
     </div>
 </section>
-
 <section class="panel">
-    <header class="panel-header">REGISTERED DEVICES</header>
+    <header class="panel-header">Devices on the network</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
-            <thead>
-                <tr>
-                    <th>HOSTNAME</th>
-                    <th>DEVICE ID</th>
-                    <th>OS</th>
-                    <th>REPORTED IP ADDRESSES</th>
-                    <th>STATUS</th>
-                    <th>LAST SEEN</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Device name</th><th>Reported IP addresses</th><th>Status</th><th>Last contacted server</th></tr></thead>
             <tbody>
-                {% if devices %}
-                    {% for device in devices %}
-                    <tr>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or 'N/A' }}</a></td>
-                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.device_id[:20] }}</td>
-                        <td>{{ device.os_name or '-' }}</td>
-                        <td style="font-family: var(--font-mono);">
-                            {% if device.network_interfaces %}
-                                {% set ips = [] %}
-                                {% for iface in device.network_interfaces %}
-                                    {% for ip in iface.get_ip_addresses() %}
-                                        {% if ips.append(ip) %}{% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                                {{ ips|join(', ') or '-' }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if device.is_online %}
-                            <span class="status-indicator status-online"><span class="status-led"></span><span class="status-text">ON</span></span>
-                            {% else %}
-                            <span class="status-indicator status-offline"><span class="status-led"></span><span class="status-text">OFF</span></span>
-                            {% endif %}
-                        </td>
-                        <td style="font-family: var(--font-mono);">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'NEVER' }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="6" class="text-center">NO DEVICES FOUND</td></tr>
-                {% endif %}
+            {% if devices %}
+                {% for device in devices %}
+                <tr>
+                    <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">{{ device.hostname or device.device_id }}</a></td>
+                    <td class="mono">
+                        {% set ips = [] %}
+                        {% for iface in device.network_interfaces %}{% for ip in iface.get_ip_addresses() %}{% if ips.append(ip) %}{% endif %}{% endfor %}{% endfor %}
+                        {{ ips|join(', ') or '—' }}
+                    </td>
+                    <td>{% if device.is_online %}<span class="status-indicator status-online"><span class="status-dot"></span><span class="status-text">Online recently</span></span>{% else %}<span class="status-indicator status-offline"><span class="status-dot"></span><span class="status-text">Offline</span></span>{% endif %}</td>
+                    <td class="mono">{{ device.last_checkin.strftime('%Y-%m-%d %H:%M:%S') if device.last_checkin else 'Never' }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="text-center">No devices found.</td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

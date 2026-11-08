@@ -1,67 +1,35 @@
 {% extends "base.html" %}
-
-{% block title %}IP ASSIGNMENTS - {{ app_name }}{% endblock %}
-
+{% block title %}IP assignments - {{ app_name }}{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>IP ASSIGNMENT REGISTRY</h1>
-</div>
-
+<div class="page-header"><h1>IP assignments</h1></div>
 <section class="panel">
-    <header class="panel-header">NOTICE</header>
+    <header class="panel-header">Notice</header>
     <div class="panel-body">
-        <p class="info-text">Static IP addresses are required in the documented deployment configuration. The server maintains a registry associating device IDs with assigned addresses.</p>
-        <div class="alert alert-warning">Storing a static IP in the database does not automatically configure the network on Windows. Network configuration requires explicit administrator authorization and safe recovery paths.</div>
+        <p>Static IP addresses should be configured on your network and on devices as documented. middleMDM records and displays reported addresses; it does not automatically change device network settings unless a supported, explicitly authorized action is implemented.</p>
     </div>
 </section>
-
 <section class="panel">
-    <header class="panel-header">ASSIGNMENTS</header>
+    <header class="panel-header">Reported addresses</header>
     <div class="panel-body panel-body-no-padding">
         <table class="data-table">
-            <thead>
-                <tr>
-                    <th>DEVICE</th>
-                    <th>DEVICE ID</th>
-                    <th>HOSTNAME</th>
-                    <th>ASSIGNED IP</th>
-                    <th>OBSERVED IP</th>
-                    <th>STATUS</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Device</th><th>Hostname</th><th>Reported IP addresses</th><th>Status</th></tr></thead>
             <tbody>
-                {% if devices %}
-                    {% for device in devices %}
-                    <tr>
-                        <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">#{{ device.id }}</a></td>
-                        <td style="font-family: var(--font-mono); font-size: 10px;">{{ device.device_id }}</td>
-                        <td>{{ device.hostname or 'N/A' }}</td>
-                        <td style="font-family: var(--font-mono); color: var(--text-muted);">MANUAL CONFIG REQUIRED</td>
-                        <td style="font-family: var(--font-mono);">
-                            {% if device.network_interfaces %}
-                                {% set ips = [] %}
-                                {% for iface in device.network_interfaces %}
-                                    {% for ip in iface.get_ip_addresses() %}
-                                        {% if ips.append(ip) %}{% endif %}
-                                    {% endfor %}
-                                {% endfor %}
-                                {{ ips|join(', ') or '-' }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if device.is_online %}
-                            <span class="status-indicator status-online"><span class="status-led"></span><span class="status-text">ON</span></span>
-                            {% else %}
-                            <span class="status-indicator status-offline"><span class="status-led"></span><span class="status-text">OFF</span></span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="6" class="text-center">NO DEVICES</td></tr>
-                {% endif %}
+            {% if devices %}
+                {% for device in devices %}
+                <tr>
+                    <td><a href="{{ url_for('dashboard.device_detail', device_id=device.id) }}">#{{ device.id }}</a></td>
+                    <td>{{ device.hostname or '—' }}</td>
+                    <td class="mono">
+                        {% set ips = [] %}
+                        {% for iface in device.network_interfaces %}{% for ip in iface.get_ip_addresses() %}{% if ips.append(ip) %}{% endif %}{% endfor %}{% endfor %}
+                        {{ ips|join(', ') or '—' }}
+                    </td>
+                    <td>{% if device.is_online %}Online recently{% else %}Offline{% endif %}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="text-center">No devices.</td></tr>
+            {% endif %}
             </tbody>
         </table>
     </div>

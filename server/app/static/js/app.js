@@ -1,58 +1,40 @@
-// middleMDM - Control Room Interface JavaScript
-// Subtle interactions, no flashy animations
-
+// middleMDM - UI helpers
 document.addEventListener('DOMContentLoaded', function() {
-    // Add active class to current nav item
+    // Active nav item
     const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath || 
-            (currentPath.startsWith(link.getAttribute('href')) && link.getAttribute('href') !== '/dashboard/')) {
+    document.querySelectorAll('.nav-link').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (href === currentPath || (href !== '/dashboard/' && currentPath.startsWith(href + '/')) || (href === '/dashboard/' && currentPath === '/dashboard/')) {
             link.classList.add('active');
         }
     });
-    
-    // Add LED indicators to status
-    const statusElements = document.querySelectorAll('.status-badge, .status-text');
-    statusElements.forEach(el => {
-        if (el.textContent.toLowerCase().includes('online')) {
-            el.classList.add('status-online');
-            if (!el.querySelector('.status-led')) {
-                const indicator = document.createElement('span');
-                indicator.className = 'status-indicator status-online';
-                indicator.innerHTML = '<span class="status-led"></span><span class="status-text">ONLINE</span>';
-                el.replaceWith(indicator);
-            }
-        } else if (el.textContent.toLowerCase().includes('offline')) {
-            el.classList.add('status-offline');
-            if (!el.querySelector('.status-led')) {
-                const indicator = document.createElement('span');
-                indicator.className = 'status-indicator status-offline';
-                indicator.innerHTML = '<span class="status-led"></span><span class="status-text">OFFLINE</span>';
-                el.replaceWith(indicator);
-            }
-        }
-    });
-    
-    // Auto-hide alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            alert.style.opacity = '0.7';
-        }, 4000);
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 6000);
-    });
-    
-    // Add confirmation to destructive actions
-    const deleteLinks = document.querySelectorAll('a[href*="delete"], button[data-action="delete"]');
-    deleteLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (!confirm('CONFIRM: This action cannot be undone. Proceed?')) {
-                e.preventDefault();
-            }
+
+    // Confirm disruptive actions
+    document.querySelectorAll('[data-confirm]').forEach(el => {
+        el.addEventListener('click', function(e) {
+            const msg = el.getAttribute('data-confirm') || 'Are you sure? This action may affect a device.';
+            if (!confirm(msg)) e.preventDefault();
         });
     });
+
+    // Auto-dismiss success/info alerts (not errors/warnings)
+    document.querySelectorAll('.alert-success, .alert-info').forEach(alert => {
+        setTimeout(() => { alert.style.opacity = '0'; alert.style.transition = 'opacity 0.3s'; }, 5000);
+        setTimeout(() => { alert.remove(); }, 5400);
+    });
+
+    // Client-side table search (for pages that opt in)
+    const searchInput = document.querySelector('[data-table-search]');
+    if (searchInput) {
+        const tableId = searchInput.getAttribute('data-table-search');
+        const table = document.getElementById(tableId);
+        if (table) {
+            searchInput.addEventListener('input', function() {
+                const q = this.value.toLowerCase();
+                table.querySelectorAll('tbody tr[data-search]').forEach(row => {
+                    row.style.display = row.getAttribute('data-search').toLowerCase().includes(q) ? '' : 'none';
+                });
+            });
+        }
+    }
 });

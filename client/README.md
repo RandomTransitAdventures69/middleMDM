@@ -15,7 +15,7 @@ Create a configuration file at `%PROGRAMDATA%\middleMDM\config.json`:
 
 ```json
 {
-  "server_url": "http://10.1.1.1:5000",
+  "server_url": "http://10.1.1.1:5001",
   "enrollment_secret": "your-enrollment-secret"
 }
 ```

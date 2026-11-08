@@ -11,7 +11,7 @@
 | ENROLLMENT_SECRET | dev-enrollment-secret-change-me | Secret for device enrollment |
 | SESSION_COOKIE_SECURE | false | Set to true for HTTPS |
 | HOST | 0.0.0.0 | Server bind address |
-| PORT | 5000 | Server port |
+| PORT | 5001 | Server port |
 
 ### Database Setup
 
@@ -36,13 +36,13 @@ DATABASE_URL=postgresql://middlemdm:password@localhost/middlemdm
 For production, use Gunicorn:
 ```bash
 pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 "server.app:create_app()"
+gunicorn -w 4 -b 0.0.0.0:5001 "server.app:create_app()"
 ```
 
 Or from the server directory:
 ```bash
 cd server
-gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app()"
+gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
 ```
 
 ## Systemd Service (Linux)
@@ -58,7 +58,7 @@ User=middlemdm
 Group=middlemdm
 WorkingDirectory=/opt/middleMDM/server
 Environment=PATH=/opt/middleMDM/server/venv/bin
-ExecStart=/opt/middleMDM/server/venv/bin/gunicorn -w 4 -b 0.0.0.0:5000 "app:create_app()"
+ExecStart=/opt/middleMDM/server/venv/bin/gunicorn -w 4 -b 0.0.0.0:5001 "app:create_app()"
 Restart=always
 
 [Install]
