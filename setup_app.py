@@ -83,6 +83,7 @@ def configure_local_env():
     }
 
     output = []
+    seen = set()
     for line in lines:
         stripped = line.lstrip()
         if not stripped or stripped.startswith("#") or "=" not in stripped:
@@ -92,11 +93,13 @@ def configure_local_env():
         if key.startswith("export "):
             key = key[7:].strip()
         if key in updates:
-            output.append(f"{key}={updates.pop(key)}")
+            output.append(f"{key}={updates[key]}")
+            seen.add(key)
         else:
             output.append(line)
     for key, value in updates.items():
-        output.append(f"{key}={value}")
+        if key not in seen:
+            output.append(f"{key}={value}")
 
     env_path.write_text("\n".join(output) + "\n", encoding="utf-8")
     if os.name != "nt":
@@ -305,7 +308,19 @@ class SetupApp:
             env = os.environ.copy()
             env.update({"FLASK_ENV": "development", "HOST": "127.0.0.1", "PORT": "5001"})
             self.server_process = subprocess.Popen(
-                [sys.executable, "run.py"],
+                [
+                    sys.executable,
+                    "-m",
+                    "flask",
+                    "--app",
+                    "run",
+                    "run",
+                    "--no-reload",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    "5001",
+                ],
                 cwd=SERVER_DIR,
                 env=env,
                 stdout=subprocess.PIPE,
