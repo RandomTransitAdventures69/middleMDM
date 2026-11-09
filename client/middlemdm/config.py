@@ -1,10 +1,25 @@
 """Client configuration."""
 import json
 import os
+import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
-CONFIG_DIR = Path(os.environ.get("PROGRAMDATA", "C:\\ProgramData")) / "middleMDM"
+
+def get_config_dir():
+    """Return the platform-standard per-machine or per-user config directory."""
+    if sys.platform == "win32":
+        return Path(os.environ.get("PROGRAMDATA", r"C:\ProgramData")) / "middleMDM"
+    if sys.platform == "darwin":
+        return Path.home() / "Library" / "Application Support" / "middleMDM"
+
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    if not config_home.is_absolute():
+        config_home = Path.home() / ".config"
+    return config_home / "middlemdm"
+
+
+CONFIG_DIR = get_config_dir()
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
@@ -74,6 +89,10 @@ def save_config(config):
         config.get("server_url"),
         config.get("allow_insecure_http", False),
     )
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    CONFIG_DIR.mkdir(parents=True, mode=0o700, exist_ok=True)
+    if os.name != "nt":
+        CONFIG_DIR.chmod(0o700)
     with open(CONFIG_FILE, 'w', encoding="utf-8") as f:
         json.dump(config, f, indent=2)
+    if os.name != "nt":
+        CONFIG_FILE.chmod(0o600)

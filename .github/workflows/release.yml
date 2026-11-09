@@ -1,0 +1,142 @@
+name: Build and publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            server/requirements.txt
+            client/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r server/requirements.txt -r client/requirements.txt pytest
+      - name: Run tests
+        run: python -m pytest tests/ -v
+
+  build-client:
+    name: Client (${{ matrix.runner }})
+    needs: test
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: windows-x64
+          - runner: ubuntu-latest
+            target: linux-x64
+          - runner: macos-latest
+            target: macos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Set target name
+        id: target
+        shell: bash
+        run: |
+          target="${{ matrix.target }}"
+          if [ "$target" = "macos" ]; then
+            target="macos-$(python -c 'import platform; print(platform.machine().lower())')"
+          fi
+          echo "name=$target" >> "$GITHUB_OUTPUT"
+      - name: Install client and release dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r client/requirements.txt pyinstaller
+      - name: Build Windows client
+        if: runner.os == 'Windows'
+        run: >
+          python -m PyInstaller --noconfirm --clean --onefile
+          --name "middlemdm-agent-${{ steps.target.outputs.name }}"
+          --collect-all wmi
+          --collect-submodules win32com
+          --hidden-import=servicemanager
+          --hidden-import=middlemdm.service.windows_service
+          --hidden-import=win32event
+          --hidden-import=win32service
+          --hidden-import=win32serviceutil
+          --hidden-import=win32timezone
+          client/middlemdm.py
+      - name: Build macOS or Linux client
+        if: runner.os != 'Windows'
+        run: >
+          python -m PyInstaller --noconfirm --clean --onefile
+          --name "middlemdm-agent-${{ steps.target.outputs.name }}"
+          client/middlemdm.py
+      - name: Smoke-test client executable
+        shell: bash
+        run: |
+          executable="client/dist/middlemdm-agent-${{ steps.target.outputs.name }}"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            executable="${executable}.exe"
+          fi
+          "$executable" --version
+      - name: Package client release
+        run: >
+          python scripts/package_client_release.py
+          --binary "client/dist/middlemdm-agent-${{ steps.target.outputs.name }}${{ runner.os == 'Windows' && '.exe' || '' }}"
+          --platform "${{ steps.target.outputs.name }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-client-${{ steps.target.outputs.name }}
+          path: client/dist/middlemdm-client-${{ steps.target.outputs.name }}.*
+          if-no-files-found: error
+
+  package-server:
+    name: Package server source
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Create server source archive
+        run: |
+          mkdir -p dist
+          git archive --format=tar \
+            --prefix="middleMDM-server-${GITHUB_REF_NAME}/" \
+            "${GITHUB_REF_NAME}" \
+            README.md LICENSE server docs/installation.md docs/server-setup.md docs/security.md docs/networking.md \
+            | gzip -n > "dist/middlemdm-server-${GITHUB_REF_NAME}.tar.gz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-server-source
+          path: dist/middlemdm-server-*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub release
+    needs: [build-client, package-server]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
+      - name: Create release and upload assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: gh release create "$TAG_NAME" release-assets/* --title "$TAG_NAME" --generate-notes --verify-tag

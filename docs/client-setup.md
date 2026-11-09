@@ -1,72 +1,127 @@
 # Client Setup
 
-## Windows Client Installation
+The middleMDM client runs on Windows, macOS, and Linux. It can run in a terminal on all three platforms; the Windows service wrapper is available only on Windows.
 
-### Prerequisites
-- Windows 10 or Windows 11
-- Python 3.8 or higher installed
-- Network connectivity to middleMDM server
+## Install
 
-### Installation Steps
+Install Python 3.8+ and client dependencies from the repository root:
 
-1. **Copy client files** to the target Windows machine (e.g., `C:\middleMDM\`)
-
-2. **Install dependencies**
-```cmd
-cd C:\middleMDM\client
-pip install -r requirements.txt
+```bash
+cd client
+python -m pip install -r requirements.txt
 ```
 
-3. **Configure the client**
-Create directory and config file:
-```cmd
-mkdir "%PROGRAMDATA%\middleMDM"
-notepad "%PROGRAMDATA%\middleMDM\config.json"
-```
+Windows-only WMI and service packages install automatically on Windows; macOS and Linux install only the portable dependencies.
 
-Add configuration:
+## Configure
+
+Create `config.json` at:
+
+| Platform | Configuration path |
+|----------|--------------------|
+| Windows | `%PROGRAMDATA%\middleMDM\config.json` |
+| macOS | `~/Library/Application Support/middleMDM/config.json` |
+| Linux | `${XDG_CONFIG_HOME:-~/.config}/middlemdm/config.json` |
+
+Example:
+
 ```json
 {
   "server_url": "https://mdm.example",
-  "enrollment_secret": "your-enrollment-secret-from-server",
+  "enrollment_secret": "the-server-enrollment-secret",
   "heartbeat_interval": 300,
   "inventory_interval": 3600
 }
 ```
-Use the HTTPS URL exposed by your trusted reverse proxy and ensure its certificate is trusted by Windows. Requests keep certificate verification enabled. For local development only, `http://localhost:5001` can be enabled by adding `"allow_insecure_http": true`; non-loopback HTTP URLs are rejected.
 
-4. **Test the client**
-```cmd
+Use the HTTPS hostname served by your trusted reverse proxy and a certificate trusted by the operating system. TLS verification remains enabled. Remote HTTP URLs are rejected. For local development only, `http://localhost:5001` may be enabled with `"allow_insecure_http": true`.
+
+The client creates its configuration directory when saving its generated device ID and API token. On macOS and Linux, it restricts that directory to the current account.
+
+## Run interactively
+
+From the client directory:
+
+```bash
 python middlemdm.py
 ```
 
-The client will automatically enroll and start reporting to the server.
+The agent enrolls the device, sends periodic heartbeats, and reports inventory. Stop it with Ctrl+C.
 
-5. **Install as Windows Service** (Recommended for production)
+## Run as a service
+
+### Windows
+
+Run the included installer from an elevated command prompt:
+
 ```cmd
-cd C:\middleMDM\client
 install_service.bat
 ```
 
-This will install and start the middleMDM Windows service.
+The Windows service can also be managed with `sc query MiddleMDM`, `net stop MiddleMDM`, and `net start MiddleMDM`.
 
-### Service Management
-```cmd
-# Check status
-sc query MiddleMDM
+### Linux (systemd)
 
-# Stop service
-net stop MiddleMDM
+Run the client under a dedicated service account and install a unit such as `/etc/systemd/system/middlemdm-agent.service`:
 
-# Start service
-net start MiddleMDM
+```ini
+[Unit]
+Description=middleMDM Device Agent
+After=network-online.target
+Wants=network-online.target
 
-# Uninstall service
-python middlemdm.py --service remove
+[Service]
+Type=simple
+User=middlemdm
+Environment=HOME=/var/lib/middlemdm
+WorkingDirectory=/opt/middleMDM/client
+ExecStart=/opt/middleMDM/venv/bin/python /opt/middleMDM/client/middlemdm.py
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Create the config at `/var/lib/middlemdm/.config/middlemdm/config.json`, then enable the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now middlemdm-agent
+```
+
+### macOS (launchd)
+
+Run the agent as the user whose configuration contains the enrollment secret. Create `~/Library/LaunchAgents/com.middlemdm.agent.plist`, replacing the Python and client paths:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.middlemdm.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/path/to/middleMDM/client/middlemdm.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+```
+
+Load it for the current user:
+
+```bash
+launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.middlemdm.agent.plist"
 ```
 
 ## Troubleshooting
 
-- **Enrollment fails**: Verify enrollment secret matches server configuration
-- **Connection issues**: Check firewall rules and server URL
-- **Service won't start**: Check Python dependencies and permissions
+- **Enrollment fails:** Verify the server URL, TLS certificate, and enrollment secret.
+- **Connection issues:** Confirm the server's HTTPS reverse proxy is reachable.
+- **Inventory is incomplete:** Some hardware fields are unavailable on certain operating systems or require elevated permissions.

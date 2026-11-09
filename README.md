@@ -17,8 +17,8 @@ middleMDM is an open-source, self-hosted Mobile Device Management (MDM) platform
 
 ## Architecture
 
-- **Server**: Python, Flask, SQLAlchemy, SQLite/PostgreSQL
-- **Client**: Python for Windows (with future support for macOS, Linux, FreeBSD)
+- **Server**: Python, Flask, SQLAlchemy, SQLite/PostgreSQL; supported on Linux and macOS
+- **Client**: Python for Windows, macOS, and Linux
 - **API**: RESTful JSON API with authenticated requests
 - **Frontend**: HTML, CSS, vanilla JavaScript (no build pipeline required)
 
@@ -47,12 +47,13 @@ See [docs/client-setup.md](docs/client-setup.md) for instructions on enrolling W
 - [Client Setup](docs/client-setup.md) - Client installation and enrollment
 - [Networking](docs/networking.md) - Network configuration and IP management
 - [Security](docs/security.md) - Security best practices
+- [Releases](docs/releases.md) - Build and publish release assets
 
 ## Requirements
 
 - Python 3.8+
-- Linux server (primary) or other OS capable of running Flask
-- Windows 10/11 for client (Windows-first)
+- Linux or macOS server
+- Windows 10/11, macOS, or Linux clients
 - Network connectivity between server and clients
 
 ## License

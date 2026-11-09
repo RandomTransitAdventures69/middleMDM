@@ -1,37 +1,41 @@
-"""Network information collector."""
+"""Cross-platform network interface collector."""
+import ipaddress
+
 import psutil
-import socket
 
 
 def get_interfaces():
-    interfaces = []
     try:
-        addrs = psutil.net_if_addrs()
+        addresses = psutil.net_if_addrs()
         stats = psutil.net_if_stats()
-        
-        for iface_name, addr_list in addrs.items():
-            ip_addresses = []
-            mac_address = None
-            
-            for addr in addr_list:
-                if addr.family.name == 'AF_INET' and addr.address:
-                    ip_addresses.append(addr.address)
-                elif addr.family.name == 'AF_INET6' and addr.address:
-                    if not addr.address.startswith('fe80'):  # Skip link-local
-                        ip_addresses.append(addr.address)
-                elif hasattr(addr.family, 'name') and 'AF_LINK' in str(addr.family) or addr.family == -1:
-                    mac_address = addr.address
-            
-            is_active = False
-            if iface_name in stats:
-                is_active = stats[iface_name].isup
-            
-            interfaces.append({
-                "name": iface_name,
-                "mac_address": mac_address,
-                "ip_addresses": ip_addresses,
-                "is_active": is_active,
-            })
-    except Exception:
-        pass
+    except (OSError, RuntimeError):
+        return []
+
+    interfaces = []
+    for interface_name, address_list in addresses.items():
+        ip_addresses = []
+        mac_address = None
+
+        for address in address_list:
+            family_name = getattr(address.family, "name", "")
+            if family_name == "AF_INET" and address.address:
+                ip_addresses.append(address.address)
+            elif family_name == "AF_INET6" and address.address:
+                ip = address.address.split("%", 1)[0]
+                try:
+                    if not ipaddress.ip_address(ip).is_link_local:
+                        ip_addresses.append(address.address)
+                except ValueError:
+                    continue
+            elif family_name in {"AF_LINK", "AF_PACKET"} or address.family == -1:
+                mac_address = address.address
+
+        interface_stats = stats.get(interface_name)
+        interfaces.append({
+            "name": interface_name,
+            "mac_address": mac_address,
+            "ip_addresses": ip_addresses,
+            "is_active": bool(interface_stats and interface_stats.isup),
+        })
+
     return interfaces
