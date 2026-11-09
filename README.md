@@ -31,10 +31,12 @@ cd server
 pip install -r requirements.txt
 cp .env.example .env  # Set both secrets to separate random values
 flask --app run init-db  # Initialize database and set the admin password
-FLASK_ENV=development flask --app run  # Local development only
+FLASK_ENV=development HOST=127.0.0.1 flask --app run run --host 127.0.0.1 --port 5001
 ```
 
 Generate two different secrets with `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` and put one each in `SECRET_KEY` and `ENROLLMENT_SECRET` in `.env`. Database initialization securely prompts for the initial administrator password. For local development, set `FLASK_ENV=development` in `.env`; production deployments should use HTTPS through a trusted TLS-terminating reverse proxy.
+
+Open the application at `http://127.0.0.1:5001/`. Do not open files under `server/app/templates` directly: Flask must render those Jinja templates and serve the stylesheet.
 
 ### Client Setup
 

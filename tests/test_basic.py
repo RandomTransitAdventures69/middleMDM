@@ -141,6 +141,35 @@ class BasicTestCase(unittest.TestCase):
         self.assertIn('Recent devices', html)
         self.assertIn('Recent activity', html)
 
+    def test_device_detail_is_rendered_with_stylesheet(self):
+        role = Role(
+            name='device_view_test',
+            display_name='Device View Test',
+            permissions=['devices:read'],
+        )
+        db.session.add(role)
+        db.session.commit()
+        db.session.add(User(username='device-view-user', password='long-test-password', role_id=role.id))
+        device = Device(device_id='device-template-test', hostname='test-workstation')
+        db.session.add(device)
+        db.session.commit()
+        self.client.post('/auth/login', data={
+            'username': 'device-view-user',
+            'password': 'long-test-password',
+        })
+
+        response = self.client.get(f'/dashboard/devices/{device.id}')
+        html = response.get_data(as_text=True)
+        stylesheet = self.client.get('/static/css/style.css')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('href="/static/css/style.css"', html)
+        self.assertIn('class="sidebar"', html)
+        self.assertIn('test-workstation', html)
+        self.assertNotIn('{% extends', html)
+        self.assertNotIn('{{ device.', html)
+        self.assertEqual(stylesheet.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()
