@@ -61,11 +61,17 @@ def create_app(config_name="default"):
             "system_settings": SystemSetting,
         }
 
+    import click
+
     # CLI command to initialize database
     @app.cli.command("init-db")
-    def init_db():
+    @click.option(
+        "--admin-password-stdin",
+        is_flag=True,
+        help="Read the initial admin password and confirmation from stdin.",
+    )
+    def init_db(admin_password_stdin):
         """Initialize the database with default roles and admin user."""
-        import click
         from .models.user import User, Role, DEFAULT_ROLES
         from .models.settings import SystemSetting
         from .extensions import db
@@ -90,11 +96,18 @@ def create_app(config_name="default"):
 
         # Create default admin if none exists
         if User.query.count() == 0:
-            password = click.prompt(
-                "Set the initial administrator password",
-                hide_input=True,
-                confirmation_prompt=True,
-            )
+            if admin_password_stdin:
+                password_stream = click.get_text_stream("stdin")
+                password = password_stream.readline().rstrip("\r\n")
+                confirmation = password_stream.readline().rstrip("\r\n")
+                if password != confirmation:
+                    raise click.ClickException("Administrator passwords did not match")
+            else:
+                password = click.prompt(
+                    "Set the initial administrator password",
+                    hide_input=True,
+                    confirmation_prompt=True,
+                )
             if len(password) < 12:
                 raise click.ClickException(
                     "Administrator password must be at least 12 characters"

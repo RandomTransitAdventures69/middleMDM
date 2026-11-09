@@ -24,6 +24,10 @@ middleMDM is an open-source, self-hosted Mobile Device Management (MDM) platform
 
 ## Quick Start
 
+### GUI Setup
+
+Run `python3 setup_app.py` from the repository root to open the Tkinter setup app. It can configure local secrets, install server dependencies, initialize the database, and start or stop the development server. On Linux, install your distribution's Tkinter package if it is not already available (for example, `python3-tk` on Debian/Ubuntu).
+
 ### Server Setup
 
 ```bash

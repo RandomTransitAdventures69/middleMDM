@@ -118,6 +118,17 @@ class BasicTestCase(unittest.TestCase):
         admin = User.query.filter_by(username='admin').one()
         self.assertTrue(admin.check_password('a-unique-password-with-12-chars'))
 
+    def test_init_db_accepts_password_from_stdin_for_setup_apps(self):
+        password = 'another-unique-password-123'
+        result = self.app.test_cli_runner().invoke(
+            args=['init-db', '--admin-password-stdin'],
+            input=f'{password}\n{password}\n',
+        )
+
+        self.assertEqual(result.exit_code, 0, result.output)
+        admin = User.query.filter_by(username='admin').one()
+        self.assertTrue(admin.check_password(password))
+
     def test_dashboard_contains_reference_layout_sections(self):
         role = Role(
             name='dashboard_test',

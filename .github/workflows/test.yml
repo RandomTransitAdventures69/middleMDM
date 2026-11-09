@@ -33,4 +33,4 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -v
       - name: Compile Python sources
-        run: python -m compileall -q server client scripts tests
+        run: python -m compileall -q setup_app.py server client scripts tests
