@@ -69,6 +69,7 @@ jobs:
         run: >
           python -m PyInstaller --noconfirm --clean --onefile
           --name "middlemdm-agent-${{ steps.target.outputs.name }}"
+          --distpath client/dist --workpath client/build --specpath client/build
           --collect-all wmi
           --collect-submodules win32com
           --hidden-import=servicemanager
@@ -83,6 +84,7 @@ jobs:
         run: >
           python -m PyInstaller --noconfirm --clean --onefile
           --name "middlemdm-agent-${{ steps.target.outputs.name }}"
+          --distpath client/dist --workpath client/build --specpath client/build
           client/middlemdm.py
       - name: Smoke-test client executable
         shell: bash
