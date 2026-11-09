@@ -75,4 +75,4 @@ def logout():
 @auth_bp.route("/health")
 def health():
     """Health check endpoint for monitoring."""
-    return jsonify({"status": "ok", "version": "0.1.0"})
+    return jsonify({"status": "ok", "version": "0.1.1"})

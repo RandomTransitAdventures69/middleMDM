@@ -31,7 +31,7 @@ class Config:
 
     # --- Application metadata ---
     APP_NAME = "middleMDM"
-    APP_VERSION = "0.1.0"
+    APP_VERSION = "0.1.1"
     DEFAULT_TIMEZONE = os.environ.get("DEFAULT_TIMEZONE", "UTC")
 
     # --- API ---
