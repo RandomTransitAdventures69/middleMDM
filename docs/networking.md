@@ -1,5 +1,5 @@
 # Networking Guide
-
+### boring nerd crap
 ## Network Requirements
 
 middleMDM requires network connectivity between the server and clients.
