@@ -67,3 +67,5 @@ See [docs/client-setup.md](docs/client-setup.md) for instructions on enrolling W
 ## License
 
 See [LICENSE](LICENSE) for details.
+
+# just get ai to do this its too complicated atp
