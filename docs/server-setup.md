@@ -11,7 +11,7 @@
 | ENROLLMENT_SECRET | a different unique random value, at least 32 characters | Secret for device enrollment |
 | SESSION_COOKIE_SECURE | true in production | Secure session-cookie setting |
 | HOST | 127.0.0.1 in production | Server bind address |
-| PORT | 5001 | Server port |
+| PORT | 1234 | Server port |
 
 Generate each secret separately:
 ```bash
