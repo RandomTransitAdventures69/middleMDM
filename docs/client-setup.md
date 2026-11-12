@@ -46,13 +46,13 @@ From the client directory:
 python middlemdm.py
 ```
 
-The agent enrolls the device, sends periodic heartbeats, and reports inventory. Stop it with Ctrl+C.
+The agent enrolls the device, sends periodic heartbeats, and reports inventory. Stop it with Ctrl+C (bad)
 
 ## Run as a service
 
 ### Windows
 
-Run the included installer from an elevated command prompt:
+Run the included installer from an elevated (admin) command prompt:
 
 ```cmd
 install_service.bat
@@ -125,3 +125,4 @@ launchctl bootstrap "gui/$(id -u)" "$HOME/Library/LaunchAgents/com.middlemdm.age
 - **Enrollment fails:** Verify the server URL, TLS certificate, and enrollment secret.
 - **Connection issues:** Confirm the server's HTTPS reverse proxy is reachable.
 - **Inventory is incomplete:** Some hardware fields are unavailable on certain operating systems or require elevated permissions.
+- ** using ai**
