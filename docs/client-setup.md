@@ -27,10 +27,10 @@ Example:
 
 ```json
 {
-  "server_url": "https://mdm.example",
-  "enrollment_secret": "the-server-enrollment-secret",
+  "server_url": "https://freetvnopaywallnoscamnoviruses.nopriating",
+  "enrollment_secret": "hehehskaurueueiajajhdh72737363$/$nsbria",
   "heartbeat_interval": 300,
-  "inventory_interval": 3600
+  "inventory_interval": 1
 }
 ```
 
