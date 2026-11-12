@@ -1,5 +1,5 @@
 # Security Guide
-
+### idk your smarter than me so figure it out
 ## Security Principles
 
 - **Your devices. Your server. Your network.** - Self-hosted for full control
