@@ -42,6 +42,8 @@ Generate two different secrets with `python3 -c "import secrets; print(secrets.t
 
 Open the application at `http://127.0.0.1:5001/`. Do not open files under `server/app/templates` directly: Flask must render those Jinja templates and serve the stylesheet.
 
+# NEEEEEEEEEEEEEEERRRRRRRRRRRRRRRRRRRRDDDDDDDDDDDDDDDD
+
 ### Client Setup
 
 See [docs/client-setup.md](docs/client-setup.md) for instructions on enrolling Windows devices.
